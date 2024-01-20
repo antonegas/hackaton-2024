@@ -1,0 +1,11 @@
+{
+  "name": "hackaton-2024",
+  "packageManager": "yarn@4.0.2",
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

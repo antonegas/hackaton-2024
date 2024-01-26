@@ -41,7 +41,7 @@ fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
         .lines()
-        .map(|result| result.unwrap())
+        .map(|result| result.unwrap()) //TODO - rewrite with ? and stop being dumb
         .take_while(|line| !line.is_empty())
         .collect();
 

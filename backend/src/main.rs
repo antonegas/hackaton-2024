@@ -36,13 +36,16 @@ fn handle_connection(mut stream: TcpStream) {
     let route = http_request[0].as_str().split_whitespace().collect::vec<&str>();
     
     match route.as_slice() {
-            ["GET", "/A", ..] => {
+            ["GET", "/home", ..]=> {
                     //Do Stuff
             },
-            ["GET", "/B", ..] => {
+            ["GET", "/login", ..] => {
                     //DO stuff
+            },
+            ["GET", "/user", ..] => {
+                    
             }
-            - => {
+            _ => {
                 let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
                 stream.write_all(response.as_bytes()).unwrap();
             }

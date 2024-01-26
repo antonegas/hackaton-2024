@@ -5,17 +5,20 @@ use std::{
 };
 
 fn main() {
-
+    println!("trying to establish server connection");
 
     match TcpListener::bind("127.0.0.1:7878"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
-                    
+            println!("Established connection");
             for stream in listener.incoming() {
                 let stream = stream.unwrap(); //Probably replace this unwrap unless i'm too retarded
-                thread::spawn(||, handle_connection(stream));
-                //handle_connection(stream); //Later multithread this part, it will be cool
-                }
+                println!("Spawning a thread");
+
+                thread::spawn(|| {
+                    handle_connection(stream);
+                });
+            }
         }
         Err(..) => {
             println!("Establishing connection failed");
@@ -34,7 +37,7 @@ fn handle_connection(mut stream: TcpStream) {
     println!("Request: {:#?}", http_request); 
 
 
-    let route = http_request[0].as_str().split_whitespace().collect::vec<&str>();
+    let route = http_request[0].as_str().split_whitespace().collect::<Vec<&str>>();
     
     match route.as_slice() {
             ["GET", "/home", ..]=> {

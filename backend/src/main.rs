@@ -12,14 +12,25 @@ fn main() {
         Ok(listener) => {
             println!("Established connection");
             for stream in listener.incoming() {
-                let stream = stream.unwrap(); //Probably replace this unwrap unless i'm too retarded
+                //println!("trying to unwrap >w<");
+                //let stream = stream.unwrap(); //Probably replace this unwrap unless i'm too retarded
                 println!("Spawning a thread");
 
-                thread::spawn(|| {
-                    handle_connection(stream);
-                });
+                match  stream {
+                        Ok(stream) => {
+                                
+                            thread::spawn(|| {
+                                handle_connection(stream);
+                            });
+                        },
+                        Err(..) => {
+                            let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
+                            //WTF does expect("REASON") do ???
+                            stream.expect("REASON").write_all(response.as_bytes()).unwrap();
+                        }
+                }
             }
-        }
+        },
         Err(..) => {
             println!("Establishing connection failed");
         }

@@ -7,7 +7,7 @@
 
 <Game1 />
 
-<main>
+<!-- <main>
   <div>
     <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
       <img src={viteLogo} class="logo" alt="Vite Logo" />
@@ -29,7 +29,7 @@
   <p class="read-the-docs">
     Click on the Vite and Svelte logos to learn more
   </p>
-</main>
+</main> -->
 
 <style>
   .logo {

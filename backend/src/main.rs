@@ -7,13 +7,13 @@ fn main() {
 
 
     match TcpListener::bind("127.0.0.1:7878"){
-
+        //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
                     
             for stream in listener.incoming() {
-                let stream = stream.unwrap();
+                let stream = stream.unwrap(); //Probably replace this unwrap unless i'm too retarded
 
-                handle_connection(stream);
+                handle_connection(stream); //Later multithread this part, it will be cool
                 }
         }
         Err(..) => {
@@ -30,7 +30,7 @@ fn handle_connection(mut stream: TcpStream) {
         .take_while(|line| !line.is_empty())
         .collect();
 
-    println!("Request: {:#?}", http_request);
+    println!("Request: {:#?}", http_request); 
 
 
     let route = http_request[0].as_str().split_whitespace().collect::vec<&str>();

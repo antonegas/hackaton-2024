@@ -1,8 +1,11 @@
 <script lang="ts">
   import svelteLogo from './assets/svelte.svg'
   import viteLogo from '/vite.svg'
+  import Game1 from './lib/Game1.svelte'
   import Counter from './lib/Counter.svelte'
 </script>
+
+<Game1 />
 
 <main>
   <div>

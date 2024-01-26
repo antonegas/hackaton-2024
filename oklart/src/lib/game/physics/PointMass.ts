@@ -1,17 +1,18 @@
-import { Vector2D } from "Vector2D";
+import { Vector2D } from "./Vector2D";
 
 export class PointMass {
-    private position: Vector2D;
-    private velocity: Vector2D;
-    private acceleration: Vector2D;
-    private invertedMass: number;
+    public position: Vector2D;
+    public nextPosition: Vector2D;
+    public velocity: Vector2D;
+    public acceleration: Vector2D;
+    public invertedMass: number;
 
     constructor() {
         this.position = Vector2D.zero();
+        this.nextPosition = Vector2D.zero();
         this.velocity = Vector2D.zero();
         this.acceleration = Vector2D.zero();
         this.invertedMass = 1.0;
     }
-    
     
 }

@@ -1,13 +1,18 @@
 import { PointMass } from "./PointMass";
 import { CircleCollider } from "./CircleCollider";
+import { EdgeCollider } from "./EdgeCollider";
+import { Vector2D } from "./Vector2D";
 
-class PhysicsEngine {
+export class PhysicsEngine {
     pointMasses: PointMass[];
     circleColliders: CircleCollider[];
+    edgeColliders: EdgeCollider[];
+    subSteps: number;
 
     constructor() {
         this.pointMasses = [];
         this.circleColliders = [];
+        this.subSteps = 10;
     }
 
     addPointMass(pointMass: PointMass) {
@@ -18,7 +23,55 @@ class PhysicsEngine {
         this.circleColliders.push(circleCollider);
     }
 
-    tick(deltaTime: number) {
-        
+    addEdgeCollider(edgeCollider: EdgeCollider) {
+        this.edgeColliders.push(edgeCollider);
     }
+
+    tick(deltaTime: number) {
+        const subDeltaTime = deltaTime / this.subSteps;
+
+        for (let i = 0; i < this.subSteps; i++) {
+            for (let pointMass of this.pointMasses) {
+                pointMass.velocity.addScaled(pointMass.acceleration, subDeltaTime);
+                pointMass.nextPosition.set(Vector2D.addScaled(
+                    pointMass.position, pointMass.velocity, subDeltaTime));
+                console.log(pointMass.nextPosition.x);
+            }
+
+            this.solveConstraintsLocally();
+
+            for (let pointMass of this.pointMasses) {
+                pointMass.velocity.set(
+                    Vector2D.divide(
+                        Vector2D.subtract(pointMass.nextPosition, pointMass.position), 
+                        subDeltaTime
+                    )
+                );
+                pointMass.position.set(pointMass.nextPosition);
+            }
+        }
+
+    }
+
+    private solveConstraintsLocally() {
+
+    }
+
+    private solveDistanceConstraintsLocally() {
+
+    }
+
+    private solveCollisionsLocally() {
+        this.solveCircleCollisionsLocally();
+        this.solveEdgeCollisionsLocally();
+    }
+
+    private solveCircleCollisionsLocally() {
+
+    }
+
+    private solveEdgeCollisionsLocally() {
+
+    }
+
 }

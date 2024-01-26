@@ -1,6 +1,6 @@
 import { PointMass } from "./PointMass"
 
-class CircleCollider {
+export class CircleCollider {
     pointMass: PointMass
     radius: number
 

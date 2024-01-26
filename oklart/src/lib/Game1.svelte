@@ -30,9 +30,22 @@
   }
 </script>
 
-<canvas
-  id="canvas"
-  width="100vw"
-  height="100vh"
-  style="background-color: black;"
-></canvas>
+<div>
+  <canvas id="canvas"></canvas>
+</div>
+
+<style>
+  div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+  }
+  canvas {
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>

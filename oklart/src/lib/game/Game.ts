@@ -1,23 +1,26 @@
+import { Level } from "./Level";
+
 export class Game {
   renderer: CanvasRenderingContext2D
-  x: number;
+  currentLevel: Level;  
 
   constructor(renderer: CanvasRenderingContext2D) {
     this.renderer = renderer;
-    this.x = 0;
+    this.currentLevel = new Level(this);
   }
 
   tick(deltaTime: number) {
-    this.x += 10.0 * deltaTime;
+    this.currentLevel.tick(deltaTime);
   }
 
   render() {
-    this.renderer.fillStyle = "red";
-    this.renderer.fillRect(this.x, 0, 10, 10);
+    this.clear();
+    this.currentLevel.render();
   }
 
   private clear() {
-
+    const canvas = this.renderer.canvas;
+    this.renderer.clearRect(0, 0, canvas.width, canvas.height);
   }
  
 }

@@ -12,12 +12,14 @@ export class Game {
   }
 
   render() {
+    this.clear();
     this.renderer.fillStyle = "red";
     this.renderer.fillRect(this.x, 0, 10, 10);
   }
 
   private clear() {
-
+    const canvas = this.renderer.canvas;
+    this.renderer.clearRect(0, 0, canvas.width, canvas.height);
   }
  
 }

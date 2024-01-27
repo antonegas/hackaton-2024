@@ -3,6 +3,7 @@
 
   export let username: string;
   export let avatarUrl: string;
+  export let partyId: number = null;
 
   let id: number;
 
@@ -10,9 +11,13 @@
     let options = {
       body: JSON.stringify({
         username: username,
-        avatar_url: avatarUrl
+        avatar: avatarUrl
       })
     };
+    console.log(id);
+    partyId = id;
+
+    console.log
   }
 
   function create() {
@@ -20,10 +25,10 @@
         method: "POST",
         body: JSON.stringify({
           username: username,
-          avatar_url: avatarUrl
+          avatar: avatarUrl
         }),
         headers: {
-        "Content-Type": "text/json",
+        "Content-Type": "application/json",
       },
     };
 

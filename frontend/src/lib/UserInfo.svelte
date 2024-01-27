@@ -18,6 +18,7 @@
     width: 100%;
     padding: 0 0.5rem;
     border-radius: 2rem;
+    margin: 1rem 0;
     transform: translate(0, 0);
     box-shadow: 0.5rem 0.5rem 0 var(--primary-color), 
     0.25rem 0.25rem 0 var(--primary-color);

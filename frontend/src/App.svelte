@@ -31,10 +31,14 @@
         const { id, username, avatar } = response;
         localStorage.setItem("signedIn", "true");
         localStorage.setItem("username", username);
-        localStorage.setItem(
+        if (avatar) {
+          localStorage.setItem(
           "avatarUrl",
           `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`
         );
+        } else {
+          localStorage.setItem("avatarUrl", `https://api.dicebear.com/7.x/thumbs/svg?seed=${username}`);
+        }
         window.location.href = "/";
       })
       .catch(console.error);
@@ -47,9 +51,7 @@
   <SignIn />
 {:else}
   <UserInfo />
-{/if}-->
-
-<Game1 />
+{/if}
 
 <!-- <Game1 /> -->
 

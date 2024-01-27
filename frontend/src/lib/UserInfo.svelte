@@ -15,9 +15,8 @@
     gap: 0.5rem;
     height: 4rem;
     background-color: var(--acent-color);
-    width: 50%;
+    width: 100%;
     padding: 0 0.5rem;
-    margin: auto;
     border-radius: 0.5rem;
   }
 

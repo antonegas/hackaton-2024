@@ -42,4 +42,8 @@ export class Vector2D {
         this.y += vector.y * scaler;
     }
 
+    rotate90DegreesClockwise() {
+        
+    }
+
 }

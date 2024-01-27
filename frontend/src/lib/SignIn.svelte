@@ -6,7 +6,13 @@
   }
 </script>
 
-<div>
+<div class="wrapper">
   <ActionButton action={authWithDiscord} description={"Continue with Discord"} />
-  <ActionButton action={authWithDiscord} description={"Continue as Guest"} />
 </div>
+
+<style>
+  .wrapper {
+    width: fit-content;
+    margin: auto;
+  }
+</style>

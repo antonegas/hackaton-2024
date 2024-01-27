@@ -105,8 +105,9 @@ export class PhysicsEngine {
         const startDisplacement = Vector2D.subtract(start1, start0);
         const t0 = startDisplacement.cross(displacement1) / denominator;
         const t1 = -displacement0.cross(startDisplacement) / denominator;
-        console.log(t0);
-        if (-0.1 < t0 && t0 < 1.1 && -0.1 < t1 && t1 < 1.1) {
+        const tolerance = 0.1; // TODO: Refactor
+        
+        if (-tolerance < t0 && t0 < 1.0 + tolerance && 0.0 < t1 && t1 < 1.0) {
             return Vector2D.addScaled(start0, displacement0, t0);
         }
         return null;

@@ -12,6 +12,8 @@ body {
   padding: 0;
   background: var(--secondary-color);
   overflow-x: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .info-wrapper {

@@ -1,0 +1,12 @@
+{
+    "weapon": {
+        "image": "src/assets/boxing/boxing.png",
+        "position": {
+            "centerX": 331,
+	        "shootX": 420,
+            "y": 203
+        }
+    },    
+    "shootEffect": "src/assets/explosionGif.gif",
+    "bullet": "src/assets/boxing/boxing.png"
+}

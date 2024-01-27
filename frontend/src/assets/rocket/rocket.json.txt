@@ -1,0 +1,16 @@
+{
+    weapon: {
+        image: pistol.png
+        center: {
+            x: 
+            y: 
+        }
+    }
+
+    shootStart: {
+        x:
+        y:
+    }
+    
+    shootEffect 
+}

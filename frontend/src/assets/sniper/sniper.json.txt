@@ -1,0 +1,12 @@
+{
+    "weapon": {
+        "image": "sniper.png",
+        "position": {
+            "centerX": 407,
+	    "shootX": 1016,
+            "y": 255
+        }
+    },   
+    "shootEffect": "../explosionGif.gif",
+    "bullet": "../bullet.png"
+}

@@ -1,0 +1,12 @@
+{
+    "weapon": {
+        "image": "grenadeLauncher.png",
+        "position": {
+            "centerX": 331,
+	    "shootX": 420,
+            "y": 203
+        }
+    },    
+    "shootEffect": "../explosionGif.gif",
+    "bullet": "../grenade.png"
+}

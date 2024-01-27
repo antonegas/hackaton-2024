@@ -3,6 +3,8 @@
   import { Game } from "./game/Game";
 
   let x = 0;
+  let width = 0;
+  let height = 0;
 
   onMount(() => {
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -30,8 +32,8 @@
   }
 </script>
 
-<div>
-  <canvas id="canvas"></canvas>
+<div bind:clientWidth={width} bind:clientHeight={height}>
+  <canvas width={width} height={height} id="canvas"></canvas>
 </div>
 
 <style>

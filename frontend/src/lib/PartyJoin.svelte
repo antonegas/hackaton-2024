@@ -21,16 +21,16 @@
   }
 
   function create() {
+
     let options = {
         method: "POST",
-        mode: "cors",
         body: JSON.stringify({
           username: username,
           avatar: avatarUrl
         }),
         headers: {
-        "Content-Type": "application/json",
-      },
+          "Content-Type": "application/json",
+        },
     };
 
     fetch("/create", options)

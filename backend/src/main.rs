@@ -77,9 +77,10 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 let status_line = "HTTP/1.1 200 OK";
                 let contents = fs::read_to_string("../../frontend/dist/index.html").unwrap();
                 let length = contents.len();
+                let content_type = "text/html";
 
                 let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
                 stream.write_all(response.as_bytes())?;
             },
             ["GET", "/party", party_id, ..] => {
@@ -95,9 +96,10 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 asset_path.push_str(possible_asset_req);
                 let contents = fs::read_to_string(asset_path).unwrap();
                 let length = contents.len();
+                let content_type = "text/javascript"
 
                 let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: text/javascript\r\n\r\n{contents}");
+                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
                 stream.write_all(response.as_bytes())?;
             }
             _ => {

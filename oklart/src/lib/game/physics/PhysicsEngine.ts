@@ -35,7 +35,6 @@ export class PhysicsEngine {
                 pointMass.velocity.addScaled(pointMass.acceleration, subDeltaTime);
                 pointMass.nextPosition.set(Vector2D.addScaled(
                     pointMass.position, pointMass.velocity, subDeltaTime));
-                console.log(pointMass.nextPosition.x);
             }
 
             this.solveConstraintsLocally();

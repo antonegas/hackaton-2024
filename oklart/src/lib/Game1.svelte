@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Game } from "./game/Game";
+  import { Level } from "./game/Level";
 
   let x = 0;
   let width = 0;
@@ -15,11 +16,13 @@
     let deltaTimeMilliseconds = 16;
     let deltaTimeSeconds = deltaTimeMilliseconds * 0.001;
 
-    const interval = setInterval(() => {
-      game.tick(deltaTimeSeconds);
-      game.render();
-    }, deltaTimeMilliseconds);
-    return () => clearInterval(interval);
+    game.load().then(() => {
+      const interval = setInterval(() => {
+        game.tick(deltaTimeSeconds);
+        game.render();
+      }, deltaTimeMilliseconds);
+      return () => clearInterval(interval);
+    });
   });
 
   let count: number = 0;
@@ -33,7 +36,7 @@
 </script>
 
 <div bind:clientWidth={width} bind:clientHeight={height}>
-  <canvas width={width} height={height} id="canvas"></canvas>
+  <canvas {width} {height} id="canvas"></canvas>
 </div>
 
 <style>

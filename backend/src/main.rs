@@ -16,7 +16,7 @@ static mut active_parties : Vec<Party> = Vec::new();
 #[derive(Serialize, Deserialize)]
 struct Player {
         username : Box<str>,
-        avatar_url : Box<str>,
+        avatar : Box<str>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -114,13 +114,30 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
             ["POST", "/create", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
                 let party_id = gen_party_id();
-                println!("{}", party_id);
+                println!("party id {}", party_id);
                 let contents = "{party_id}";
                 let length = contents.len();
-                let content_type = "text/text";
-                 
-                let mut new_player = serde_json::Deserializer::from_reader(&stream);
-                let host = Player::deserialize(&mut new_player)?;
+                let content_type = "text/plain";
+                
+
+
+
+                let reader = BufReader::new(&stream);
+                println!("1");
+                let host: Player = serde_json::from_reader(reader)?;
+                println!("2");
+                //let mut new_player = serde_json::Deserializer::from_reader(&stream);
+                
+
+                //let host = Player::deserialize(&mut new_player).unwrap(); //?
+
+
+                //let host: Player = serde_json::from_str(new_player).unwrap();
+                
+
+
+                println!("player {} with url {}", host.username, host.avatar);
+
 
                 let new_party = Party {
                         id : party_id,
@@ -128,7 +145,9 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 };
 
                 unsafe {
-                        active_parties.push(new_party);
+                    &active_parties.push(new_party);
+                    
+                    println!("len of parties {}", &active_parties.len());
                 }
                 let response = 
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
@@ -255,21 +274,21 @@ fn return_home(mut stream : &TcpStream) -> io::Result<()>{
 fn gen_party_id() -> u32 {
     let mut possible_id : u32 = 0;
     unsafe {
-    loop 
-    {   
         let mut found = false;
-        for party in &active_parties {
-            if possible_id == party.id {
-                possible_id += 1;
-                found = true;
-                break
+        while !found {
+            for party in &active_parties {
+                if party.id == possible_id {
+                    found = true;
+                    possible_id += 1;
+                    continue;
+                }
+            }
+            if !found {
+                return possible_id;
             }
         }
-        if !found {
-                return possible_id;
-        }
-        
     }
-    }
-    return possible_id; // this is dumb, but makes the compiler shut up
+    return possible_id;
 }
+
+

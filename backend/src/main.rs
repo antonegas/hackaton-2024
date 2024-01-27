@@ -1,6 +1,3 @@
-
-
-
 use std::{
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
@@ -14,6 +11,20 @@ use std::{
 use serde::{
         Serialize, Deserialize,
 };
+
+
+static mut active_parties : Vec<Party> = Vec::new();
+
+struct Player {
+        username : str,
+        avatar_url : str,
+}
+
+struct Party {
+    id : u32,
+    players : Vec<Player>,
+    streams : Vec<TcpStream>,
+}
 
 fn main() {
     println!("trying to establish server connection");
@@ -48,18 +59,6 @@ fn main() {
     }
 }
 
-//fn handle_connection(mut stream: TcpStream) -> Result<(), io::Error)> {
-  //  let buf_reader = BufReader::new(&mut stream);
-    //let http_request: Vec<_> = buf_reader
-      //  .lines()
-      //  .map(|result| result.unwrap())?
-      //  .take_while(|line| !line.is_empty())
-      //  .collect();
-
-
-
-    
-
 
 fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
     
@@ -81,10 +80,35 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
             ["GET", "/", ..] => {
                 return return_home(&stream);
             },
-            ["GET", "/party", party_id, ..] => {
+            ["GET", "/join", party_id, ..] => {
                 println!("{} is the party id", party_id);
                 let response = "HTTP/1.1 200 OK\r\n\r\n";
                 stream.write_all(response.as_bytes())?;
+            },
+            ["GET", "/create", ..] => {
+                let status_line = "HTTP/1.1 200 OK";
+                let party_id = gen_party_id();
+                println!("{}", party_id);
+                let contents = "{party_id}";
+                let length = contents.len();
+                let content_type = "text/text";
+                 
+                let mut new_player = serde_json::Deserializer::from_reader(stream);
+                let host = User::deserialize(&mut de)?;
+
+                let new_party = Party {
+                        id : party_id,
+                        players : Vec![host], //TODO get initial player
+                        streams : Vec![stream], 
+                };
+
+                //insert the party into my bunghole
+                unsafe { //entering my bunghole is very unsafe
+                        active_parties.push(new_party);
+                }
+
+                let response = 
+                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
             },
             ["GET", possible_asset_req, ..] => {
                 let status_line = "HTTP/1.1 200 OK";
@@ -96,9 +120,8 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
 
 
                 let mut asset_path: String = "../../frontend/dist".to_owned();
-                //let possible_asset_req: String = possible_asset_req.to_owned();
-    
                 asset_path.push_str(possible_asset_req);
+
                 let contents = fs::read_to_string(asset_path).unwrap();
                 let length = contents.len();
                 let content_type = "text/javascript";
@@ -194,4 +217,27 @@ fn return_home(mut stream : &TcpStream) -> io::Result<()>{
         format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
     stream.write_all(response.as_bytes())?;
     Ok(())
+}
+
+
+fn gen_party_id() -> u32 {
+    let mut possible_id : u32 = 0;
+    unsafe {
+    loop 
+    {   
+        let mut found = false;
+        for party in &active_parties {
+            if possible_id == party.id {
+                possible_id += 1;
+                found = true;
+                break
+            }
+        }
+        if !found {
+                return possible_id;
+        }
+        
+    }
+    }
+    return possible_id; // this is dumb, but makes the compiler shut up
 }

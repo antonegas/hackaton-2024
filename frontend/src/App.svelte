@@ -6,8 +6,11 @@
   import Counter from "./lib/Counter.svelte";
   import SignIn from "./lib/SignIn.svelte";
   import UserInfo from "./lib/UserInfo.svelte";
+  import PartyJoin from "./lib/PartyJoin.svelte";
 
   let signedIn: boolean = localStorage.getItem("signedIn") === "true";
+  let username: string = localStorage.getItem("username");
+  let avatarUrl: string = localStorage.getItem("avatarUrl");
 
   onMount(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -48,7 +51,8 @@
   });
 </script>
 
-<!--<h1>Ball Pit</h1>
+<!--
+<h1>Ball Pit</h1>
 
 {#if !signedIn}
   <SignIn />

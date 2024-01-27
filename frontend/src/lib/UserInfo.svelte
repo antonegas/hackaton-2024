@@ -1,6 +1,6 @@
 <script lang="ts">
-  let username: string = localStorage.getItem("username");
-  let avatarUrl: string = localStorage.getItem("avatarUrl");
+  export let username: string;
+  export let avatarUrl: string;
 </script>
 
 <div class="wrapper">

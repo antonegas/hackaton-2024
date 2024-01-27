@@ -1,6 +1,9 @@
 <script lang="ts">
   import ActionButton from "./ActionButton.svelte";
 
+  export let username: string;
+  export let avatarUrl: string;
+
   let id;
 
   function join(id) {
@@ -8,7 +11,14 @@
   }
 
   function create() {
-    fetch("/create")
+    let options = {
+      body: JSON.stringify({
+        username: username,
+        avatar_url: avatarUrl
+      })
+    };
+
+    fetch("/create", options)
     .then((result) => console.log(result))
     .catch(console.error);
   }
@@ -20,7 +30,7 @@
   {:else}
     <ActionButton action={create} description={"Create Party"} />
   {/if}
-  <input type="text" bind:value={id}/>
+  <input type="number" bind:value={id}/>
 </div>
 
 <style>
@@ -40,5 +50,15 @@
     font-size: 2rem;
     line-height: 3rem;
     width: 15rem;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 </style>

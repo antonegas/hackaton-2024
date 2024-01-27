@@ -4,14 +4,21 @@ use std::{
     thread,
     fs,
     io,
-    collections::HashMap
 };
 
 use serde::{Deserialize, Serialize};
 
 
-static mut stream_party_map : HashMap<u32, Vec<&mut TcpStream>> = HashMap::new(); 
 static mut active_parties : Vec<Party> = Vec::new();
+static mut party_connections : Vec<Party_connections> = Vec::new();
+
+struct Party_connections {
+        partyId : u32,
+        streams : Vec<&mut TcpStream>,
+}
+
+
+
 
 #[derive(Serialize, Deserialize)]
 struct Player {
@@ -27,7 +34,7 @@ struct Party {
 
 
 
-fn main() {
+fn main() -> Result<(), io::Error> {
     println!("trying to establish server connection");
 
     match TcpListener::bind("192.168.168.218:5173"){
@@ -41,9 +48,10 @@ fn main() {
 
                 match  stream {
                         Ok(stream) => {
+                            let http = parse_http(&mut stream)?;
                                 
                             thread::spawn(|| {
-                                handle_connection(&mut stream);
+                                handle_connection(&mut stream, http);
                             });
                         },
                         Err(..) => {
@@ -56,13 +64,14 @@ fn main() {
         },
         Err(..) => {
             println!("Establishing connection failed");
+            return Ok(());
         }
     }
+    return Ok(());
 }
 
 
-fn handle_connection(stream: &mut TcpStream) -> io::Result<()> {
-    
+fn parse_http(stream: &mut TcpStream) -> Result<Vec<String>, io::Error>{
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
         .lines()
@@ -73,13 +82,29 @@ fn handle_connection(stream: &mut TcpStream) -> io::Result<()> {
         .collect::<Result<_, _>>()?;
 
     println!("Request: {:#?}", http_request);
+    return Ok(http_request);
+}
+
+
+fn handle_connection(stream: &mut TcpStream, http_request: Vec<String>) -> io::Result<()> {
+    
+    //let buf_reader = BufReader::new(&mut stream);
+    //let http_request: Vec<_> = buf_reader
+    //    .lines()
+    //    .take_while(|result| match result {
+    //        Ok(line) => !line.is_empty(),
+    //        Err(_) => false,
+    //    })
+    //    .collect::<Result<_, _>>()?;
+
+    // println!("Request: {:#?}", http_request);
 
     if let Some(route) = http_request.get(0) {
         let parts = route.split_whitespace().collect::<Vec<&str>>();
 
         match parts.as_slice() {
             ["GET", "/", ..] => {
-                return return_home(&stream);
+                return return_home(stream);
             },
             ["GET", "/join", party_id, ..] => {
                 println!("{} is the party id", party_id);
@@ -104,7 +129,11 @@ fn handle_connection(stream: &mut TcpStream) -> io::Result<()> {
 
                 unsafe {
                         let new_vec = vec![stream];
-                        stream_party_map.insert(party_id, new_vec);
+                        let connection = Party_connections {
+                                partyId : party_id,
+                                streams : new_vec,
+                        };
+                        party_connections.push(connection);
                 }
 
                 //insert the party into my bunghole
@@ -120,7 +149,7 @@ fn handle_connection(stream: &mut TcpStream) -> io::Result<()> {
 
                 //This means it  has a Token and should be sent to home page
                 if possible_asset_req.starts_with("/#") {
-                    return return_home(&stream);
+                    return return_home(stream);
                 }
 
 

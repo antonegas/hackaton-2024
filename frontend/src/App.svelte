@@ -41,13 +41,13 @@
   });
 </script>
 
-<h1>Ball Pit</h1>
+<!--<h1>Ball Pit</h1>
 
 {#if !signedIn}
   <SignIn />
 {:else}
   <UserInfo />
-{/if}
+{/if}-->
 
 <Game1 />
 

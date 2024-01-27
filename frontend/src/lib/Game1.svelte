@@ -35,15 +35,15 @@
   }
 </script>
 
-<div bind:clientWidth={width} bind:clientHeight={height}>
-  <canvas {width} {height} id="canvas"></canvas>
+<div>
+  <canvas width="900" height="500" id="canvas"></canvas>
 </div>
 
 <style>
   div {
-    width: 100%;
-    height: 100%;
-    display: flex;
+    width: 900px;
+    height: 500px;
+    /* display: flex; */
   }
   canvas {
     background-color: black;

@@ -12,7 +12,7 @@
 
     let game = new Game(renderer);
 
-    let deltaTimeMilliseconds = 20;
+    let deltaTimeMilliseconds = 16;
     let deltaTimeSeconds = deltaTimeMilliseconds * 0.001;
 
     const interval = setInterval(() => {

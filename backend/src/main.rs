@@ -76,6 +76,26 @@ fn handle_connection(mut stream: TcpStream) {
     }
 }
 
+
+//Just writing some test code to play with JSON, probably won't compile and definitley won't work
+//For JSON objects, there must be a corresponding struct, with [derive(Serialize, Deserialize)]
+//#[serde(rename = "userId")] - how to serialize by a certain name. serde requires camelCase unlike
+//Rust which uses snake_case by convention
+#[tokio::main]
+fn turn_json_into_struct() -> Result<(), reqwest::Error> {
+        let some_request //: Some_struct
+            = reqwest::Client::new() // new request client
+            .get("http://127.0.0.1:7878/userId=1") // this issues a get to the placeholder
+            .send() // send the request
+            .await?
+            .text() //turn response body into a str. Replace with .json later
+            .await?;
+        //still dont know what's happening'
+
+        println!("{:#?}", some_request);
+        Ok(());
+}
+
 //EXAMPLE of returning a HTML response
 //Look into finding HTML's from frontend folder
     //let status_line = "HTTP/1.1 200 OK";
@@ -84,3 +104,31 @@ fn handle_connection(mut stream: TcpStream) {
 
   //  let response =
   //      format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+
+
+
+
+fn create_and_return_json() -> Result<(), reqwest::Error> {
+    let some_struct //:Some_struct        
+        = Some_struct {
+                id: 1,
+                retarded: true,
+                title: "like and subscribe",
+        };
+    let some_struct = reqwest::Client::new()
+        .post("http://placeholder")
+        .json(&some_struct) //serialize struct into JSON
+        .send()
+        .await?
+        .json() //second send is to take the ressponse and put it into a json and save it in some_struct? seems retarded af
+        .await?;
+
+    println!("{:#?}", some_struct);
+    
+    Ok(());
+}
+
+
+
+

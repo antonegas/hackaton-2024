@@ -4,7 +4,7 @@
   export let username: string;
   export let avatarUrl: string;
 
-  let id;
+  let id: number;
 
   function join(id) {
     let options = {
@@ -23,7 +23,7 @@
           avatar_url: avatarUrl
         }),
         headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "text/json",
       },
     };
 
@@ -34,7 +34,7 @@
 </script>
 
 <div class="wrapper">
-  {#if id}
+  {#if Number.isSafeInteger(id)}
     <ActionButton action={() => join(id)} description={"Join Party"} />
   {:else}
     <ActionButton action={create} description={"Create Party"} />

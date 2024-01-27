@@ -30,7 +30,7 @@ struct Party {
 fn main() -> Result<(), io::Error> {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("192.168.168.218:5173"){
+    match TcpListener::bind("127.0.0.1:5173"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
             println!("Established connection, {}", listener.local_addr().unwrap());
@@ -42,8 +42,11 @@ fn main() -> Result<(), io::Error> {
                 match  stream {
                         Ok(stream) => {
                             thread::spawn(|| {
-                                handle_connection(stream);
+                                //handle_connection(stream);
+                                test_stream(stream);
                             });
+
+
                         },
                         Err(..) => {
                             let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
@@ -62,15 +65,26 @@ fn main() -> Result<(), io::Error> {
 }
 
 
+fn test_stream(mut stream : TcpStream) -> io::Result<()> {
+        let buf_reader = BufReader::new(&mut stream);
 
+        for line in buf_reader.lines() {
+                println!("{}", line?);
+        }
+
+        Ok(())
+}
 
 fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
-    
+     
     let buf_reader = BufReader::new(&mut stream);
+
+    
+
     let http_request: Vec<_> = buf_reader
         .lines()
         .take_while(|result| match result {
-            Ok(line) => !line.is_empty(),
+            Ok(line) => true,
             Err(_) => false,
         })
         .collect::<Result<_, _>>()?;
@@ -79,6 +93,10 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
 
     if let Some(route) = http_request.get(0) {
         let parts = route.split_whitespace().collect::<Vec<&str>>();
+
+        for i in parts.as_slice(){
+                println!("{}", i);
+        }
 
         match parts.as_slice() {
             ["GET", "/", ..] => {

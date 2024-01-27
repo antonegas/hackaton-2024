@@ -62,19 +62,6 @@ fn main() -> Result<(), io::Error> {
 }
 
 
-fn parse_http(stream: TcpStream) -> Result<Vec<String>, io::Error>{
-    let buf_reader = BufReader::new(stream);
-    let http_request: Vec<_> = buf_reader
-        .lines()
-        .take_while(|result| match result {
-            Ok(line) => !line.is_empty(),
-            Err(_) => false,
-        })
-        .collect::<Result<_, _>>()?;
-
-    println!("Request: {:#?}", http_request);
-    return Ok(http_request);
-}
 
 
 fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
@@ -88,7 +75,7 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
         })
         .collect::<Result<_, _>>()?;
 
-    // println!("Request: {:#?}", http_request);
+    println!("Request: {:#?}", http_request);
 
     if let Some(route) = http_request.get(0) {
         let parts = route.split_whitespace().collect::<Vec<&str>>();
@@ -96,13 +83,35 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
         match parts.as_slice() {
             ["GET", "/", ..] => {
                 return return_home(&stream);
+            }
+            ["GET", "/party", party_id, ..] => {
+                let status_line = "HTTP/1.1 200 OK\r\n";
+                
+
+                let party_id = party_id.parse::<u32>().unwrap();
+                unsafe {
+                        
+                    for party in &active_parties {
+                        if party.id == party_id {
+                                let contents = serde_json::to_string(&party).unwrap();
+                                let length = contents.len();
+                                let content_type = "text/json";
+
+                                let response =
+                                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+                                stream.write_all(response.as_bytes())?;
+                                
+                                
+                        }
+                    }
+                }
             },
             ["GET", "/join", party_id, ..] => {
                 println!("{} is the party id", party_id);
                 let response = "HTTP/1.1 200 OK\r\n\r\n";
                 stream.write_all(response.as_bytes())?;
             },
-            ["GET", "/create", ..] => {
+            ["POST", "/create", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
                 let party_id = gen_party_id();
                 println!("{}", party_id);
@@ -110,12 +119,20 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 let length = contents.len();
                 let content_type = "text/text";
                  
-                let mut new_player = serde_json::Deserializer::from_reader(stream);
+                let mut new_player = serde_json::Deserializer::from_reader(&stream);
                 let host = Player::deserialize(&mut new_player)?;
 
+                let new_party = Party {
+                        id : party_id,
+                        players : vec![host],
+                };
 
+                unsafe {
+                        active_parties.push(new_party);
+                }
                 let response = 
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+                stream.write_all(response.as_bytes())?;
             },
             ["GET", possible_asset_req, ..] => {
                 let status_line = "HTTP/1.1 200 OK";
@@ -131,7 +148,15 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
 
                 let contents = fs::read_to_string(asset_path).unwrap();
                 let length = contents.len();
-                let content_type = "text/javascript";
+
+                let mut content_type = "";
+
+                if possible_asset_req.contains(".js") {
+                    content_type = "text/javascript";
+                }
+                if possible_asset_req.contains(".css") {
+                    content_type = "text/css";
+                }
 
                 let response =
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");

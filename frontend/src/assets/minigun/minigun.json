@@ -1,0 +1,12 @@
+{
+    "weapon": {
+        "image": "src/assets/minigun/minigun.png",
+        "position": {
+            "centerX": 267,
+	        "shootX": 980,
+            "y": 408
+        }
+    },
+    "shootEffect": "src/assets/explosionGif.gif",
+    "bullet": "src/assets/bullet.png"
+}

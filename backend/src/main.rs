@@ -114,7 +114,7 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
             ["POST", "/create", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
                 let party_id = gen_party_id();
-                println!("party id {}", party_id);
+                println!("party id {}, fml", party_id);
                 let contents = "{party_id}";
                 let length = contents.len();
                 let content_type = "text/plain";
@@ -122,26 +122,45 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
 
 
 
+//let mut buf = String::new();
+//    stream.read_to_string(&mut buf)?;
+
+    // Print the raw JSON data
+//    println!("Raw JSON data: {}", buf);
+                
+
+//println!("2");
+
+
+
                 let reader = BufReader::new(&stream);
-                println!("1");
-                let host: Player = serde_json::from_reader(reader)?;
-                println!("2");
-                //let mut new_player = serde_json::Deserializer::from_reader(&stream);
+                for line in reader.lines() {
+                    let line = line?; // Line here is a String ending with your delimiter (e.g., newline)
+                    println!("Received: {}", line);
+                }
+
+
+                //let host: Result<Player, serde_json::Error> = serde_json::from_reader(&reader);
+
+                //match host {
+                //    Ok(host) => {
+                //        // Processing on successful deserialization
+                //        println!("player {} with url {}", host.username, host.avatar);
+                //    },
+                //    Err(e) => {
+                //        // Error handling
+                //        println!("Failed to deserialize: {}", e);
+                //    }
+                //}
+
                 
 
-                //let host = Player::deserialize(&mut new_player).unwrap(); //?
 
-
-                //let host: Player = serde_json::from_str(new_player).unwrap();
-                
-
-
-                println!("player {} with url {}", host.username, host.avatar);
 
 
                 let new_party = Party {
                         id : party_id,
-                        players : vec![host],
+                        players : vec![],
                 };
 
                 unsafe {

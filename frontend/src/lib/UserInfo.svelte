@@ -1,9 +1,10 @@
 <script lang="ts">
   export let username: string;
   export let avatarUrl: string;
+  export let onClick = () => {};
 </script>
 
-<div class="wrapper">
+<div class="wrapper" on:click={onClick}>
   <img class="avatar" src={avatarUrl} />
   <p>{username}</p>
 </div>

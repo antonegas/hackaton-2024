@@ -23,7 +23,12 @@
   }
 
   h1 {
+    font-family: 'Sixtyfour', sans-serif;
+    font-size: 5rem;
+    font-weight: 400;
     text-align: center;
+    color: var(--primary-color);
+    animation: 2s ease-in-out 0s infinite swag;
   }
 
   @keyframes swag {

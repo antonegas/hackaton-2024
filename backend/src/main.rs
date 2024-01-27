@@ -3,6 +3,7 @@ use std::{
     net::{TcpListener, TcpStream},
     thread,
     fs,
+    io,
 };
 
 use serde::{
@@ -12,10 +13,10 @@ use serde::{
 fn main() {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:7878"){
+    match TcpListener::bind("127.0.0.1:0"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
-            println!("Established connection");
+            println!("Established connection, {}", listener.local_addr().unwrap());
             for stream in listener.incoming() {
                 //println!("trying to unwrap >w<");
                 //let stream = stream.unwrap(); //Probably replace this unwrap unless i'm too retarded
@@ -42,64 +43,61 @@ fn main() {
     }
 }
 
-fn handle_connection(mut stream: TcpStream) {
+//fn handle_connection(mut stream: TcpStream) -> Result<(), io::Error)> {
+  //  let buf_reader = BufReader::new(&mut stream);
+    //let http_request: Vec<_> = buf_reader
+      //  .lines()
+      //  .map(|result| result.unwrap())?
+      //  .take_while(|line| !line.is_empty())
+      //  .collect();
+
+
+
+    
+
+
+fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
+    
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
         .lines()
-        .map(|result| result.unwrap()) //TODO - rewrite with ? and stop being dumb
-        .take_while(|line| !line.is_empty())
-        .collect();
+        .take_while(|result| match result {
+            Ok(line) => !line.is_empty(),
+            Err(_) => false,
+        })
+        .collect::<Result<_, _>>()?;
 
-    println!("Request: {:#?}", http_request); 
+    println!("Request: {:#?}", http_request);
 
+    if let Some(route) = http_request.get(0) {
+        let parts = route.split_whitespace().collect::<Vec<&str>>();
 
-    let route = http_request[0].as_str().split_whitespace().collect::<Vec<&str>>();
-    
-    match route.as_slice() {
-            ["GET", "/home", ..]=> {
+        match parts.as_slice() {
+            ["GET", "/home", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("home.html").unwrap();
+                let contents = fs::read_to_string("../../backend/index.html").unwrap();
                 let length = contents.len();
 
                 let response =
                     format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-                
-                stream.write_all(response.as_bytes()).unwrap(); //TODO, unwrap is bad
+                stream.write_all(response.as_bytes())?;
             },
-            ["GET", "/login", ..] => {
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("login.html").unwrap();
-                let length = contents.len();
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-            
-                stream.write_all(response.as_bytes()).unwrap();
-            },
-            ["GET", "/user", ..] => {
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("user.html").unwrap();
-                let length = contents.len();
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-                stream.write_all(response.as_bytes()).unwrap();
-            },
-            ["GET", "/lobby", _, ..] => {
-                let partyID = route.as_slice()[2];
-                println!("{} is the party id", partyID);
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("lobby.html").unwrap();
-                let length = contents.len();
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-                stream.write_all(response.as_bytes()).unwrap();
+            ["GET", "/party", party_id, ..] => {
+                println!("{} is the party id", party_id);
+                let response = "HTTP/1.1 200 OK\r\n\r\n";
+                stream.write_all(response.as_bytes())?;
             },
             _ => {
                 let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
+                stream.write_all(response.as_bytes())?;
             }
+        }
+    } else {
+        let response = "HTTP/1.1 400 Bad Request\r\n\r\n";
+        stream.write_all(response.as_bytes())?;
     }
+
+    Ok(())
 }
 
 

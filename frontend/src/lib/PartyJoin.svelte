@@ -7,7 +7,12 @@
   let id;
 
   function join(id) {
-
+    let options = {
+      body: JSON.stringify({
+        username: username,
+        avatar_url: avatarUrl
+      })
+    };
   }
 
   function create() {
@@ -30,7 +35,7 @@
   {:else}
     <ActionButton action={create} description={"Create Party"} />
   {/if}
-  <input type="number" bind:value={id}/>
+  <input type="number" bind:value={id} placeholder="Party Code"/>
 </div>
 
 <style>

@@ -7,6 +7,7 @@
   import SignIn from "./lib/SignIn.svelte";
   import UserInfo from "./lib/UserInfo.svelte";
   import PartyJoin from "./lib/PartyJoin.svelte";
+  import SwagH1 from "./lib/SwagH1.svelte";
 
   let signedIn: boolean = localStorage.getItem("signedIn") === "true";
   let username: string = localStorage.getItem("username");
@@ -48,7 +49,7 @@
   });
 </script>
 
-<h1>Ball Pit</h1>
+<SwagH1 text={"Ball Pit"} duration={2}/>
 
 <div class="info-wrapper">
   {#if !signedIn}
@@ -77,4 +78,34 @@
   .read-the-docs {
     color: #888;
   }
+
+  h1 {
+    font-family: 'Sixtyfour', sans-serif;
+    font-size: 5rem;
+    font-weight: 400;
+    text-align: center;
+    color: var(--primary-color);
+    animation: 2s ease-in-out 0s infinite swag;
+  }
+
+  @keyframes swag {
+  0% {
+    transform: translate(0, 0);
+    text-shadow: 0.125rem 0.125rem 0 var(--accent-color),
+    0.25rem 0.25rem 0 var(--accent-color),
+    0.375rem 0.375rem 0 var(--accent-color),
+    0.5rem 0.5rem 0 var(--accent-color);
+  }
+  50% {
+    transform: translate(0.5rem, 0.5rem);
+    text-shadow: 0 0 0 var(--primary-color);
+  }
+  100% {
+    transform: translate(0, 0);
+    text-shadow: 0.125rem 0.125rem 0 var(--accent-color),
+    0.25rem 0.25rem 0 var(--accent-color),
+    0.375rem 0.375rem 0 var(--accent-color),
+    0.5rem 0.5rem 0 var(--accent-color);
+  }
+}
 </style>

@@ -2,7 +2,8 @@
   color: #fff;
   --primary-color: #FB6C16;
   --secondary-color: #B7D8E1;
-  --acent-color: #5BC54B;
+  --accent-color: #5BC54B;
+  --hover-color: #1B835D;
   --darker-color: #57709C;
 }
 
@@ -10,15 +11,7 @@ body {
   margin: 0;
   padding: 0;
   background: var(--secondary-color);
-}
-
-h1 {
-  font-family: 'Sixtyfour', sans-serif;
-  font-size: 5rem;
-  font-weight: 400;
-  text-align: center;
-  text-shadow: 0.125rem 0.125rem 0 var(--acent-color), 0.125em 0.125em 0 var(--acent-color);
-  color: var(--primary-color);
+  overflow-x: hidden;
 }
 
 .info-wrapper {

@@ -4,32 +4,33 @@ use std::{
     thread,
     fs,
     io,
+    collections::HashMap
 };
 
+use serde::{Deserialize, Serialize};
 
 
-use serde::{
-        Serialize, Deserialize,
-};
-
-
+static mut stream_party_map : HashMap<u32, Vec<&mut TcpStream>> = HashMap::new(); 
 static mut active_parties : Vec<Party> = Vec::new();
 
+#[derive(Serialize, Deserialize)]
 struct Player {
-        username : str,
-        avatar_url : str,
+        username : Box<str>,
+        avatar_url : Box<str>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct Party {
     id : u32,
     players : Vec<Player>,
-    streams : Vec<TcpStream>,
 }
+
+
 
 fn main() {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:5173"){
+    match TcpListener::bind("192.168.168.218:5173"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
             println!("Established connection, {}", listener.local_addr().unwrap());
@@ -42,7 +43,7 @@ fn main() {
                         Ok(stream) => {
                                 
                             thread::spawn(|| {
-                                handle_connection(stream);
+                                handle_connection(&mut stream);
                             });
                         },
                         Err(..) => {
@@ -60,7 +61,7 @@ fn main() {
 }
 
 
-fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
+fn handle_connection(stream: &mut TcpStream) -> io::Result<()> {
     
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
@@ -94,13 +95,17 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 let content_type = "text/text";
                  
                 let mut new_player = serde_json::Deserializer::from_reader(stream);
-                let host = User::deserialize(&mut de)?;
+                let host = Player::deserialize(&mut new_player)?;
 
                 let new_party = Party {
                         id : party_id,
-                        players : Vec![host], //TODO get initial player
-                        streams : Vec![stream], 
+                        players : vec![host], //TODO get initial player
                 };
+
+                unsafe {
+                        let new_vec = vec![stream];
+                        stream_party_map.insert(party_id, new_vec);
+                }
 
                 //insert the party into my bunghole
                 unsafe { //entering my bunghole is very unsafe

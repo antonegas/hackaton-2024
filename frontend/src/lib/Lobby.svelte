@@ -7,12 +7,6 @@
   export let username;
   export let avatarUrl;
   export let signedIn;
-
-  function logout() {
-    localStorage.setItem("signedIn", "false");
-    window.location.href = "/";
-    console.log("hello")
-  }
 </script>
 
 <SwagH1 text={"Ball Pit"} duration={2}/>
@@ -21,7 +15,7 @@
   {#if !signedIn}
     <SignIn />
   {:else}
-    <UserInfo username={username} avatarUrl={avatarUrl} onClick={logout} />
+    <UserInfo username={username} avatarUrl={avatarUrl}/>
     <PartyJoin username={username} avatarUrl={avatarUrl} />
   {/if}
 </div>

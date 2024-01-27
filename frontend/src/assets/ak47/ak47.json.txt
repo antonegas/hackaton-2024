@@ -1,0 +1,12 @@
+{
+    "weapon": {
+        "image": "ak47.png",
+        "position": {
+            "centerX": 470,
+	    "shootX": 1143,
+            "y": 370
+        }
+    },
+    "shootEffect": "../explosionGif.gif",
+    "bullet": "../bullet.png"
+}

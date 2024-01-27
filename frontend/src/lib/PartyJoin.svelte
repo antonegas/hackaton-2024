@@ -17,11 +17,14 @@
 
   function create() {
     let options = {
-      method: "POST",
-      body: JSON.stringify({
-        username: username,
-        avatar_url: avatarUrl
-      })
+        method: "POST",
+        body: JSON.stringify({
+          username: username,
+          avatar_url: avatarUrl
+        }),
+        headers: {
+        "Content-Type": "application/json",
+      },
     };
 
     fetch("/create", options)

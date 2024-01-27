@@ -2,6 +2,11 @@ use std::{
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
     thread,
+    fs,
+};
+
+use serde::{
+        Serialize, Deserialize,
 };
 
 fn main() {
@@ -52,26 +57,47 @@ fn handle_connection(mut stream: TcpStream) {
     
     match route.as_slice() {
             ["GET", "/home", ..]=> {
-                let response = "HTTP/1.1 200 OK\r\n\r\n";
-                stream.write_all(response.as_bytes()).unwrap();
+                let status_line = "HTTP/1.1 200 OK";
+                let contents = fs::read_to_string("home.html").unwrap();
+                let length = contents.len();
+
+                let response =
+                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+                
+                stream.write_all(response.as_bytes()).unwrap(); //TODO, unwrap is bad
             },
             ["GET", "/login", ..] => {
-                let response = "HTTP/1.1 200 OK\r\n\r\n";
+                let status_line = "HTTP/1.1 200 OK";
+                let contents = fs::read_to_string("login.html").unwrap();
+                let length = contents.len();
+
+                let response =
+                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+            
                 stream.write_all(response.as_bytes()).unwrap();
             },
             ["GET", "/user", ..] => {
-                let response = "HTTP/1.1 200 OK\r\n\r\n";
+                let status_line = "HTTP/1.1 200 OK";
+                let contents = fs::read_to_string("user.html").unwrap();
+                let length = contents.len();
+
+                let response =
+                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
                 stream.write_all(response.as_bytes()).unwrap();
             },
-            ["GET", "/party", _, ..] => {
+            ["GET", "/lobby", _, ..] => {
                 let partyID = route.as_slice()[2];
                 println!("{} is the party id", partyID);
-                let response = "HTTP/1.1 200 OK\r\n\r\n";
+                let status_line = "HTTP/1.1 200 OK";
+                let contents = fs::read_to_string("lobby.html").unwrap();
+                let length = contents.len();
+
+                let response =
+                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
                 stream.write_all(response.as_bytes()).unwrap();
             },
             _ => {
                 let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
-                stream.write_all(response.as_bytes()).unwrap();
             }
     }
 }
@@ -81,8 +107,29 @@ fn handle_connection(mut stream: TcpStream) {
 //For JSON objects, there must be a corresponding struct, with [derive(Serialize, Deserialize)]
 //#[serde(rename = "userId")] - how to serialize by a certain name. serde requires camelCase unlike
 //Rust which uses snake_case by convention
+#[derive(Serialize, Deserialize)]
+struct Player_state {
+        id : u8,
+        x : f32,
+        y : f32,
+        velocity : (f32, f32),
+}
+
+#[derive(Serialize, Deserialize)]
+struct Bullet {
+        x : f32,
+        y : f32,
+        velocity : (f32, f32),
+}
+
+#[derive(Serialize, Deserialize)]
+struct Game_state {
+        players : Vec<Player_state>,
+        bullets : Vec<Bullet>,
+}
+
 #[tokio::main]
-fn turn_json_into_struct() -> Result<(), reqwest::Error> {
+async fn turn_json_into_struct() -> Result<(), reqwest::Error> {
         let some_request //: Some_struct
             = reqwest::Client::new() // new request client
             .get("http://127.0.0.1:7878/userId=1") // this issues a get to the placeholder
@@ -93,29 +140,17 @@ fn turn_json_into_struct() -> Result<(), reqwest::Error> {
         //still dont know what's happening'
 
         println!("{:#?}", some_request);
-        Ok(());
+        Ok(())
 }
 
-//EXAMPLE of returning a HTML response
-//Look into finding HTML's from frontend folder
-    //let status_line = "HTTP/1.1 200 OK";
-  //  let contents = fs::read_to_string("hello.html").unwrap();
-  //  let length = contents.len();
-
-  //  let response =
-  //      format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-
-
-
-
-
-fn create_and_return_json() -> Result<(), reqwest::Error> {
-    let some_struct //:Some_struct        
-        = Some_struct {
-                id: 1,
-                retarded: true,
-                title: "like and subscribe",
-        };
+#[tokio::main]
+async fn create_and_return_json() -> Result<(), reqwest::Error> {
+    let some_struct = Player_state {
+        id : 1,
+        x : 1.0,
+        y : 1.0,
+        velocity : (0.1, 0.1),
+    };
     let some_struct = reqwest::Client::new()
         .post("http://placeholder")
         .json(&some_struct) //serialize struct into JSON
@@ -126,7 +161,7 @@ fn create_and_return_json() -> Result<(), reqwest::Error> {
 
     println!("{:#?}", some_struct);
     
-    Ok(());
+    Ok(())
 }
 
 

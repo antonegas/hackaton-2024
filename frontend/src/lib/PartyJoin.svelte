@@ -23,6 +23,7 @@
   function create() {
     let options = {
         method: "POST",
+        mode: "cors",
         body: JSON.stringify({
           username: username,
           avatar: avatarUrl

@@ -75,7 +75,7 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
         match parts.as_slice() {
             ["GET", "/home", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("../../backend/index.html").unwrap();
+                let contents = fs::read_to_string("../../frontend/dist/index.html").unwrap();
                 let length = contents.len();
 
                 let response =
@@ -87,6 +87,19 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 let response = "HTTP/1.1 200 OK\r\n\r\n";
                 stream.write_all(response.as_bytes())?;
             },
+            ["GET", possible_asset_req, ..] => {
+                let status_line = "HTTP/1.1 200 OK";
+                let mut asset_path: String = "../../frontend/dist".to_owned();
+                //let possible_asset_req: String = possible_asset_req.to_owned();
+    
+                asset_path.push_str(possible_asset_req);
+                let contents = fs::read_to_string(asset_path).unwrap();
+                let length = contents.len();
+
+                let response =
+                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: text/javascript\r\n\r\n{contents}");
+                stream.write_all(response.as_bytes())?;
+            }
             _ => {
                 let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
                 stream.write_all(response.as_bytes())?;

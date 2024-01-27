@@ -2,15 +2,21 @@ use std::{
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
     thread,
+    fs,
+    io,
+};
+
+use serde::{
+        Serialize, Deserialize,
 };
 
 fn main() {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:7878"){
+    match TcpListener::bind("127.0.0.1:0"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
-            println!("Established connection");
+            println!("Established connection, {}", listener.local_addr().unwrap());
             for stream in listener.incoming() {
                 //println!("trying to unwrap >w<");
                 //let stream = stream.unwrap(); //Probably replace this unwrap unless i'm too retarded
@@ -37,65 +43,76 @@ fn main() {
     }
 }
 
-fn handle_connection(mut stream: TcpStream) {
+//fn handle_connection(mut stream: TcpStream) -> Result<(), io::Error)> {
+  //  let buf_reader = BufReader::new(&mut stream);
+    //let http_request: Vec<_> = buf_reader
+      //  .lines()
+      //  .map(|result| result.unwrap())?
+      //  .take_while(|line| !line.is_empty())
+      //  .collect();
+
+
+
+    
+
+
+fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
+    
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
         .lines()
-        .map(|result| result.unwrap()) //TODO - rewrite with ? and stop being dumb
-        .take_while(|line| !line.is_empty())
-        .collect();
+        .take_while(|result| match result {
+            Ok(line) => !line.is_empty(),
+            Err(_) => false,
+        })
+        .collect::<Result<_, _>>()?;
 
-    println!("Request: {:#?}", http_request); 
+    println!("Request: {:#?}", http_request);
 
+    if let Some(route) = http_request.get(0) {
+        let parts = route.split_whitespace().collect::<Vec<&str>>();
 
-    let route = http_request[0].as_str().split_whitespace().collect::<Vec<&str>>();
+        match parts.as_slice() {
+            ["GET", "/home", ..] => {
+                let status_line = "HTTP/1.1 200 OK";
+                let contents = fs::read_to_string("../../frontend/dist/index.html").unwrap();
+                let length = contents.len();
+                let content_type = "text/html";
+
+                let response =
+                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+                stream.write_all(response.as_bytes())?;
+            },
+            ["GET", "/party", party_id, ..] => {
+                println!("{} is the party id", party_id);
+                let response = "HTTP/1.1 200 OK\r\n\r\n";
+                stream.write_all(response.as_bytes())?;
+            },
+            ["GET", possible_asset_req, ..] => {
+                let status_line = "HTTP/1.1 200 OK";
+                let mut asset_path: String = "../../frontend/dist".to_owned();
+                //let possible_asset_req: String = possible_asset_req.to_owned();
     
-    match route.as_slice() {
-            ["GET", "/home", ..]=> {
-                //let response = "HTTP/1.1 200 OK\r\n\r\n";
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("home.html").unwrap();
+                asset_path.push_str(possible_asset_req);
+                let contents = fs::read_to_string(asset_path).unwrap();
                 let length = contents.len();
+                let content_type = "text/javascript"
 
                 let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-                
-                stream.write_all(response.as_bytes()).unwrap(); //TODO, unwrap is bad
-            },
-            ["GET", "/login", ..] => {
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("login.html").unwrap();
-                let length = contents.len();
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-            
-                stream.write_all(response.as_bytes()).unwrap();
-            },
-            ["GET", "/user", ..] => {
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("user.html").unwrap();
-                let length = contents.len();
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-                stream.write_all(response.as_bytes()).unwrap();
-            },
-            ["GET", "/lobby", _, ..] => {
-                let partyID = route.as_slice()[2];
-                println!("{} is the party id", partyID);
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("user.html").unwrap();
-                let length = contents.len();
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-                stream.write_all(response.as_bytes()).unwrap();
-            },
+                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+                stream.write_all(response.as_bytes())?;
+            }
             _ => {
                 let response = "HTTP/1.1 404 NOT FOUND\r\n\r\n";
+                stream.write_all(response.as_bytes())?;
             }
+        }
+    } else {
+        let response = "HTTP/1.1 400 Bad Request\r\n\r\n";
+        stream.write_all(response.as_bytes())?;
     }
+
+    Ok(())
 }
 
 
@@ -105,11 +122,13 @@ fn handle_connection(mut stream: TcpStream) {
 //Rust which uses snake_case by convention
 #[derive(Serialize, Deserialize)]
 struct Player_state {
+        id : u8,
         x : f32,
         y : f32,
         velocity : (f32, f32),
 }
 
+#[derive(Serialize, Deserialize)]
 struct Bullet {
         x : f32,
         y : f32,
@@ -123,7 +142,7 @@ struct Game_state {
 }
 
 #[tokio::main]
-fn turn_json_into_struct() -> Result<(), reqwest::Error> {
+async fn turn_json_into_struct() -> Result<(), reqwest::Error> {
         let some_request //: Some_struct
             = reqwest::Client::new() // new request client
             .get("http://127.0.0.1:7878/userId=1") // this issues a get to the placeholder
@@ -134,21 +153,17 @@ fn turn_json_into_struct() -> Result<(), reqwest::Error> {
         //still dont know what's happening'
 
         println!("{:#?}", some_request);
-        Ok(());
+        Ok(())
 }
 
-
-
-
-
-
-fn create_and_return_json() -> Result<(), reqwest::Error> {
-    let some_struct //:Some_struct        
-        = Some_struct {
-                id: 1,
-                retarded: true,
-                title: "like and subscribe",
-        };
+#[tokio::main]
+async fn create_and_return_json() -> Result<(), reqwest::Error> {
+    let some_struct = Player_state {
+        id : 1,
+        x : 1.0,
+        y : 1.0,
+        velocity : (0.1, 0.1),
+    };
     let some_struct = reqwest::Client::new()
         .post("http://placeholder")
         .json(&some_struct) //serialize struct into JSON
@@ -159,7 +174,7 @@ fn create_and_return_json() -> Result<(), reqwest::Error> {
 
     println!("{:#?}", some_struct);
     
-    Ok(());
+    Ok(())
 }
 
 

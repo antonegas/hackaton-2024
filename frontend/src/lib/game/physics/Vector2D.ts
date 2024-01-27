@@ -37,13 +37,31 @@ export class Vector2D {
         this.y = vector.y;
     }
 
+    divide(scaler: number) {
+        this.x /= scaler;
+        this.y /= scaler;
+    }
+
     addScaled(vector: Vector2D, scaler: number) {
         this.x += vector.x * scaler;
         this.y += vector.y * scaler;
     }
 
-    rotate90DegreesClockwise() {
-        
+    rotate90DegreesCCW() {
+        const oldX = this.x;
+        this.x = -this.y;
+        this.y = oldX;
     }
 
+    getLength() {
+        return Math.sqrt(this.x * this.x + this.y * this.y); 
+    }
+
+    normalize() {
+        this.divide(this.getLength());
+    }
+
+    dot(vector: Vector2D) {
+        return this.x * vector.x + this.y * vector.y;
+    }
 }

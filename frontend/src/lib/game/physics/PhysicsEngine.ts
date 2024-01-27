@@ -70,7 +70,17 @@ export class PhysicsEngine {
     }
 
     private solveEdgeCollisionsLocally() {
-
+        for (let circleCollider of this.circleColliders) {
+            let pointMass = circleCollider.pointMass;
+            const displacement = Vector2D.subtract(pointMass.nextPosition, pointMass.position);
+            for (const edgeCollider of this.edgeColliders) {
+                if (displacement.dot(edgeCollider.normal) > 0) {
+                    continue;
+                }
+            }
+        }
     }
+
+    //private Vector2D intersection
 
 }

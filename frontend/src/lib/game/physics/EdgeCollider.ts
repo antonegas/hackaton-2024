@@ -10,5 +10,6 @@ export class EdgeCollider {
         this.end = end;
         this.normal = Vector2D.subtract(end, start);
         this.normal.rotate90DegreesCCW();
+        this.normal.normalize();
     }
 }

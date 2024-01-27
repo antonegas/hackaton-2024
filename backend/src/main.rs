@@ -16,14 +16,14 @@ use serde::{
 static mut active_parties : Vec<Party> = Vec::new();
 
 struct Player {
-        username : Box<str>,
-        avatar_url : Box<str>,
+        username : str,
+        avatar_url : str,
 }
 
 struct Party {
     id : u32,
     players : Vec<Player>,
-    streams : Vec<Box<TcpStream>>,
+    streams : Vec<TcpStream>,
 }
 
 fn main() {
@@ -88,9 +88,24 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
             ["GET", "/create", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
                 let party_id = gen_party_id();
+                println!("{}", party_id);
                 let contents = "{party_id}";
                 let length = contents.len();
                 let content_type = "text/text";
+                 
+                let mut new_player = serde_json::Deserializer::from_reader(stream);
+                let host = User::deserialize(&mut de)?;
+
+                let new_party = Party {
+                        id : party_id,
+                        players : Vec![host], //TODO get initial player
+                        streams : Vec![stream], 
+                };
+
+                //insert the party into my bunghole
+                unsafe { //entering my bunghole is very unsafe
+                        active_parties.push(new_party);
+                }
 
                 let response = 
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
@@ -209,15 +224,19 @@ fn gen_party_id() -> u32 {
     let mut possible_id : u32 = 0;
     unsafe {
     loop 
-    {
+    {   
+        let mut found = false;
         for party in &active_parties {
             if possible_id == party.id {
-                    possible_id += 1;
-                
-                continue;
+                possible_id += 1;
+                found = true;
+                break
             }
         }
-        return possible_id;
+        if !found {
+                return possible_id;
+        }
+        
     }
     }
     return possible_id; // this is dumb, but makes the compiler shut up

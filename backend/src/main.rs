@@ -10,13 +10,6 @@ use serde::{Deserialize, Serialize};
 
 
 static mut active_parties : Vec<Party> = Vec::new();
-static mut party_connections : Vec<Party_connections> = Vec::new();
-
-struct Party_connections {
-        partyId : u32,
-        streams : Vec<&mut TcpStream>,
-}
-
 
 
 
@@ -48,10 +41,8 @@ fn main() -> Result<(), io::Error> {
 
                 match  stream {
                         Ok(stream) => {
-                            let http = parse_http(&mut stream)?;
-                                
                             thread::spawn(|| {
-                                handle_connection(&mut stream, http);
+                                handle_connection(stream);
                             });
                         },
                         Err(..) => {
@@ -71,8 +62,8 @@ fn main() -> Result<(), io::Error> {
 }
 
 
-fn parse_http(stream: &mut TcpStream) -> Result<Vec<String>, io::Error>{
-    let buf_reader = BufReader::new(&mut stream);
+fn parse_http(stream: TcpStream) -> Result<Vec<String>, io::Error>{
+    let buf_reader = BufReader::new(stream);
     let http_request: Vec<_> = buf_reader
         .lines()
         .take_while(|result| match result {
@@ -86,16 +77,16 @@ fn parse_http(stream: &mut TcpStream) -> Result<Vec<String>, io::Error>{
 }
 
 
-fn handle_connection(stream: &mut TcpStream, http_request: Vec<String>) -> io::Result<()> {
+fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
     
-    //let buf_reader = BufReader::new(&mut stream);
-    //let http_request: Vec<_> = buf_reader
-    //    .lines()
-    //    .take_while(|result| match result {
-    //        Ok(line) => !line.is_empty(),
-    //        Err(_) => false,
-    //    })
-    //    .collect::<Result<_, _>>()?;
+    let buf_reader = BufReader::new(&mut stream);
+    let http_request: Vec<_> = buf_reader
+        .lines()
+        .take_while(|result| match result {
+            Ok(line) => !line.is_empty(),
+            Err(_) => false,
+        })
+        .collect::<Result<_, _>>()?;
 
     // println!("Request: {:#?}", http_request);
 
@@ -104,7 +95,7 @@ fn handle_connection(stream: &mut TcpStream, http_request: Vec<String>) -> io::R
 
         match parts.as_slice() {
             ["GET", "/", ..] => {
-                return return_home(stream);
+                return return_home(&stream);
             },
             ["GET", "/join", party_id, ..] => {
                 println!("{} is the party id", party_id);
@@ -122,24 +113,6 @@ fn handle_connection(stream: &mut TcpStream, http_request: Vec<String>) -> io::R
                 let mut new_player = serde_json::Deserializer::from_reader(stream);
                 let host = Player::deserialize(&mut new_player)?;
 
-                let new_party = Party {
-                        id : party_id,
-                        players : vec![host], //TODO get initial player
-                };
-
-                unsafe {
-                        let new_vec = vec![stream];
-                        let connection = Party_connections {
-                                partyId : party_id,
-                                streams : new_vec,
-                        };
-                        party_connections.push(connection);
-                }
-
-                //insert the party into my bunghole
-                unsafe { //entering my bunghole is very unsafe
-                        active_parties.push(new_party);
-                }
 
                 let response = 
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
@@ -149,7 +122,7 @@ fn handle_connection(stream: &mut TcpStream, http_request: Vec<String>) -> io::R
 
                 //This means it  has a Token and should be sent to home page
                 if possible_asset_req.starts_with("/#") {
-                    return return_home(stream);
+                    return return_home(&stream);
                 }
 
 

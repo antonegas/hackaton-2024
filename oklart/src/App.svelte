@@ -5,7 +5,9 @@
   import Counter from './lib/Counter.svelte'
 </script>
 
-<Game1 />
+<h1>Ball Pit</h1>
+
+<!-- <Game1 /> -->
 
 <!-- <main>
   <div>

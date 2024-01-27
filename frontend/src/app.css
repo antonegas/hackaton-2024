@@ -30,6 +30,7 @@ a:hover {
   --primary-color: #FB6C16;
   --secondary-color: #B7D8E1;
   --acent-color: #5BC54B;
+  --darker-color: #57709C;
 }
 
 body {
@@ -44,7 +45,7 @@ body {
 
 h1 {
   font-family: 'Sixtyfour', sans-serif;
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: 400;
   text-align: center;
   text-shadow: 0.125rem 0.125rem 0 var(--acent-color), 0.125em 0.125em 0 var(--acent-color);

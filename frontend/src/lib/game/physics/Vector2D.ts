@@ -11,6 +11,13 @@ export class Vector2D {
         return new Vector2D(0.0, 0.0);
     }
 
+    static add(vector0, Vector2D, vector1: Vector2D) {
+        return new Vector2D(
+            vector0.x + vector1.x, 
+            vector0.y + vector1.y
+        );
+    }
+
     static subtract(vector0: Vector2D, vector1: Vector2D) {
         return new Vector2D(
             vector0.x - vector1.x, 
@@ -63,5 +70,9 @@ export class Vector2D {
 
     dot(vector: Vector2D) {
         return this.x * vector.x + this.y * vector.y;
+    }
+
+    cross(vector: Vector2D) {
+        return this.x * vector.y - vector.x * this.y;
     }
 }

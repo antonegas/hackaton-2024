@@ -33,11 +33,14 @@
         localStorage.setItem("username", username);
         if (avatar) {
           localStorage.setItem(
-          "avatarUrl",
-          `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`
-        );
+            "avatarUrl",
+            `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`
+          );
         } else {
-          localStorage.setItem("avatarUrl", `https://api.dicebear.com/7.x/thumbs/svg?seed=${username}`);
+          localStorage.setItem(
+            "avatarUrl",
+            `https://api.dicebear.com/7.x/thumbs/svg?seed=${username}`
+          );
         }
         window.location.href = "/";
       })
@@ -51,9 +54,9 @@
   <SignIn />
 {:else}
   <UserInfo />
-{/if}
+{/if}-->
 
-<!-- <Game1 /> -->
+<Game1 />
 
 <!-- <main>
   <div>

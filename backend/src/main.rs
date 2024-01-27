@@ -6,30 +6,31 @@ use std::{
     io,
 };
 
-
-
-use serde::{
-        Serialize, Deserialize,
-};
+use serde::{Deserialize, Serialize};
 
 
 static mut active_parties : Vec<Party> = Vec::new();
 
+
+
+#[derive(Serialize, Deserialize)]
 struct Player {
-        username : str,
-        avatar_url : str,
+        username : Box<str>,
+        avatar_url : Box<str>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct Party {
     id : u32,
     players : Vec<Player>,
-    streams : Vec<TcpStream>,
 }
 
-fn main() {
+
+
+fn main() -> Result<(), io::Error> {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:5173"){
+    match TcpListener::bind("192.168.168.218:5173"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
             println!("Established connection, {}", listener.local_addr().unwrap());
@@ -40,7 +41,6 @@ fn main() {
 
                 match  stream {
                         Ok(stream) => {
-                                
                             thread::spawn(|| {
                                 handle_connection(stream);
                             });
@@ -55,8 +55,25 @@ fn main() {
         },
         Err(..) => {
             println!("Establishing connection failed");
+            return Ok(());
         }
     }
+    return Ok(());
+}
+
+
+fn parse_http(stream: TcpStream) -> Result<Vec<String>, io::Error>{
+    let buf_reader = BufReader::new(stream);
+    let http_request: Vec<_> = buf_reader
+        .lines()
+        .take_while(|result| match result {
+            Ok(line) => !line.is_empty(),
+            Err(_) => false,
+        })
+        .collect::<Result<_, _>>()?;
+
+    println!("Request: {:#?}", http_request);
+    return Ok(http_request);
 }
 
 
@@ -71,7 +88,7 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
         })
         .collect::<Result<_, _>>()?;
 
-    println!("Request: {:#?}", http_request);
+    // println!("Request: {:#?}", http_request);
 
     if let Some(route) = http_request.get(0) {
         let parts = route.split_whitespace().collect::<Vec<&str>>();
@@ -94,18 +111,8 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 let content_type = "text/text";
                  
                 let mut new_player = serde_json::Deserializer::from_reader(stream);
-                let host = User::deserialize(&mut de)?;
+                let host = Player::deserialize(&mut new_player)?;
 
-                let new_party = Party {
-                        id : party_id,
-                        players : Vec![host], //TODO get initial player
-                        streams : Vec![stream], 
-                };
-
-                //insert the party into my bunghole
-                unsafe { //entering my bunghole is very unsafe
-                        active_parties.push(new_party);
-                }
 
                 let response = 
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");

@@ -1,3 +1,6 @@
+
+
+
 use std::{
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
@@ -6,6 +9,8 @@ use std::{
     io,
 };
 
+
+
 use serde::{
         Serialize, Deserialize,
 };
@@ -13,7 +18,7 @@ use serde::{
 fn main() {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:0"){
+    match TcpListener::bind("127.0.0.1:5173"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
             println!("Established connection, {}", listener.local_addr().unwrap());
@@ -73,15 +78,8 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
         let parts = route.split_whitespace().collect::<Vec<&str>>();
 
         match parts.as_slice() {
-            ["GET", "/home", ..] => {
-                let status_line = "HTTP/1.1 200 OK";
-                let contents = fs::read_to_string("../../frontend/dist/index.html").unwrap();
-                let length = contents.len();
-                let content_type = "text/html";
-
-                let response =
-                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
-                stream.write_all(response.as_bytes())?;
+            ["GET", "/", ..] => {
+                return return_home(&stream);
             },
             ["GET", "/party", party_id, ..] => {
                 println!("{} is the party id", party_id);
@@ -90,13 +88,20 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
             },
             ["GET", possible_asset_req, ..] => {
                 let status_line = "HTTP/1.1 200 OK";
+
+                //This means it  has a Token and should be sent to home page
+                if possible_asset_req.starts_with("/#") {
+                    return return_home(&stream);
+                }
+
+
                 let mut asset_path: String = "../../frontend/dist".to_owned();
                 //let possible_asset_req: String = possible_asset_req.to_owned();
     
                 asset_path.push_str(possible_asset_req);
                 let contents = fs::read_to_string(asset_path).unwrap();
                 let length = contents.len();
-                let content_type = "text/javascript"
+                let content_type = "text/javascript";
 
                 let response =
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
@@ -179,4 +184,14 @@ async fn create_and_return_json() -> Result<(), reqwest::Error> {
 
 
 
+fn return_home(mut stream : &TcpStream) -> io::Result<()>{
+    let status_line = "HTTP/1.1 200 OK";
+    let contents = fs::read_to_string("../../frontend/dist/index.html").unwrap();
+    let length = contents.len();
+    let content_type = "text/html";
 
+    let response =
+        format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+    stream.write_all(response.as_bytes())?;
+    Ok(())
+}

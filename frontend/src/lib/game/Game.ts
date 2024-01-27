@@ -1,4 +1,5 @@
 import { Level } from "./Level";
+import playerImage from '../../assets/Trollface.png';
 
 export class Game {
   renderer: CanvasRenderingContext2D
@@ -6,7 +7,15 @@ export class Game {
 
   constructor(renderer: CanvasRenderingContext2D) {
     this.renderer = renderer;
-    this.currentLevel = new Level(this);
+    this.currentLevel = null;
+  }
+
+  async load() {
+    let image = new Image();
+    image.src = playerImage;
+    return image.decode().then(() => {createImageBitmap(image).then(imageBitmap => {
+      this.currentLevel = new Level(this, imageBitmap);
+    })});
   }
 
   tick(deltaTime: number) {

@@ -2,18 +2,21 @@ import { PointMass } from "./PointMass";
 import { CircleCollider } from "./CircleCollider";
 import { EdgeCollider } from "./EdgeCollider";
 import { Vector2D } from "./Vector2D";
+import { CollisionListener } from "./CollisionListener";
 
 export class PhysicsEngine {
     pointMasses: PointMass[];
     circleColliders: CircleCollider[];
     edgeColliders: EdgeCollider[];
     subSteps: number;
+    collisionListener: CollisionListener
 
     constructor() {
         this.pointMasses = [];
         this.circleColliders = [];
         this.edgeColliders = [];
         this.subSteps = 10;
+        this.collisionListener = null;
     }
 
     addPointMass(pointMass: PointMass) {
@@ -89,6 +92,10 @@ export class PhysicsEngine {
                     const penetration = circleCollider.radius - 
                     Vector2D.subtract(pointMass.nextPosition, edgeCollider.start).dot(edgeCollider.normal);
                     pointMass.nextPosition.addScaled(edgeCollider.normal, penetration);
+                    if (this.collisionListener) {
+                        console.log("Hello");
+                        this.collisionListener.onEdgeCollision(circleCollider, edgeCollider);
+                    }
                 }
             }
         }
@@ -99,13 +106,13 @@ export class PhysicsEngine {
         start1: Vector2D, displacement1: Vector2D
     ) {
         const denominator = displacement0.cross(displacement1);
-        if (Math.abs(denominator) < 0.0001) {
+        if (Math.abs(denominator) < 0.0000001) {
             return null;
         }
         const startDisplacement = Vector2D.subtract(start1, start0);
         const t0 = startDisplacement.cross(displacement1) / denominator;
         const t1 = -displacement0.cross(startDisplacement) / denominator;
-        const tolerance = 0.1; // TODO: Refactor
+        const tolerance = 1; // TODO: Refactor
         
         if (-tolerance < t0 && t0 < 1.0 + tolerance && 0.0 < t1 && t1 < 1.0) {
             return Vector2D.addScaled(start0, displacement0, t0);

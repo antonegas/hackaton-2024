@@ -17,6 +17,8 @@
     let deltaTimeSeconds = deltaTimeMilliseconds * 0.001;
 
     game.load().then(() => {
+      window.addEventListener("keydown", (e) => game.onKeyPressed(e));
+      window.addEventListener("keyup", (e) => game.onKeyReleased(e));
       const interval = setInterval(() => {
         game.tick(deltaTimeSeconds);
         game.render();

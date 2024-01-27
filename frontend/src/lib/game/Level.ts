@@ -1,21 +1,28 @@
 import { Game } from "./Game";
+import { Gun } from "./guns/Gun";
 import { CircleCollider } from "./physics/CircleCollider";
+import { CollisionListener } from "./physics/CollisionListener";
 import { EdgeCollider } from "./physics/EdgeCollider";
 import { PhysicsEngine } from "./physics/PhysicsEngine";
 import { PointMass } from "./physics/PointMass";
 import { Vector2D } from "./physics/Vector2D";
 import { Player } from "./player";
 
-export class Level {
+export class Level implements CollisionListener {
     game: Game
     camera: Vector2D;
     physicsEngine: PhysicsEngine;
     players: Player[];
+    controlledPlayer: Player;
+    jumpCounter: number
+
+    static maxJumpCounter = 1
 
     constructor(game: Game, playerImage: ImageBitmap) {
         this.game = game;
         this.camera = new Vector2D(10.0, 10.0);
         this.physicsEngine = new PhysicsEngine();
+        this.physicsEngine.collisionListener = this;
         
         let pointMass = new PointMass();
         pointMass.position.x = 3.0;
@@ -32,11 +39,57 @@ export class Level {
         this.physicsEngine.addEdgeCollider(edgeCollider0);
         this.physicsEngine.addEdgeCollider(edgeCollider1);
 
-        this.players = [new Player(this, circleCollider, playerImage)];
+        this.controlledPlayer = new Player(this, circleCollider, playerImage)
+        this.players = [this.controlledPlayer];
+        this.jumpCounter = Level.maxJumpCounter;
     }
 
     tick(deltaTime: number) {
+        this.handleKeyEvents();
+        for (let player of this.players) {
+            player.tick(deltaTime);
+        }
         this.physicsEngine.tick(deltaTime);
+    }
+
+    private handleKeyEvents() {
+        while (this.game.hasKeyEvents()) {
+            const keyEvent = this.game.popKeyEvent();
+            const key = keyEvent.keyboardEvent.key;
+            if (keyEvent.pressed) {
+                if (key == "a") {
+                    this.controlledPlayer.steeringDirection = -1;
+                } else if (key == "d") {
+                    this.controlledPlayer.steeringDirection = 1;
+                } else if (key == "w" || key == " ") {
+                    if (this.jumpCounter > 0) {
+                        this.controlledPlayer.jump();
+                        this.jumpCounter--;
+                    }
+                }
+            } else {
+                if (key == "a") {
+                    if (this.controlledPlayer.steeringDirection == -1) {
+                        this.controlledPlayer.steeringDirection = 0;
+                    }
+                } else if (key == "d") {
+                    if (this.controlledPlayer.steeringDirection == 1) {
+                        this.controlledPlayer.steeringDirection = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    onEdgeCollision(circleCollider: CircleCollider, edgeCollider: EdgeCollider) {
+        if (edgeCollider.normal.y < 0.5) {
+            return;
+        }
+        for (let player of this.players) {
+            if (player.circleCollider == circleCollider) {
+                this.jumpCounter = Level.maxJumpCounter;
+            }
+        }
     }
 
     render() {

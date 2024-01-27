@@ -64,6 +64,10 @@ export class Vector2D {
         return Math.sqrt(this.x * this.x + this.y * this.y); 
     }
 
+    getAngle() {
+        return Math.atan2(this.y, this.x);
+    }
+
     normalize() {
         this.divide(this.getLength());
     }

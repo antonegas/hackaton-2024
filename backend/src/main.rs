@@ -1,3 +1,6 @@
+
+
+
 use std::{
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
@@ -6,6 +9,8 @@ use std::{
     io,
 };
 
+
+
 use serde::{
         Serialize, Deserialize,
 };
@@ -13,7 +18,7 @@ use serde::{
 fn main() {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:0"){
+    match TcpListener::bind("127.0.0.1:5173"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
             println!("Established connection, {}", listener.local_addr().unwrap());

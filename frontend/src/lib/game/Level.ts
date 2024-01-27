@@ -20,7 +20,7 @@ export class Level implements CollisionListener {
 
     constructor(game: Game, playerImage: ImageBitmap) {
         this.game = game;
-        this.camera = new Vector2D(10.0, 10.0);
+        this.camera = new Vector2D(100.0, 100.0);
         this.physicsEngine = new PhysicsEngine();
         this.physicsEngine.collisionListener = this;
         
@@ -42,6 +42,8 @@ export class Level implements CollisionListener {
         this.controlledPlayer = new Player(this, circleCollider, playerImage)
         this.players = [this.controlledPlayer];
         this.jumpCounter = Level.maxJumpCounter;
+
+        this.controlledPlayer.gun = this.game.pistol;
     }
 
     tick(deltaTime: number) {

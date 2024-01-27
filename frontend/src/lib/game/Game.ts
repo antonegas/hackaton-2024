@@ -2,6 +2,8 @@ import { Level } from "./Level";
 import playerImage from '../../assets/Trollface.png';
 import { KeyEvent } from "./KeyEvent";
 import { Gun } from "./guns/Gun";
+import pistolJson from "../../assets/pistol/pistol.json";
+import { Vector2D } from "./physics/Vector2D";
 
 export class Game {
   renderer: CanvasRenderingContext2D
@@ -20,11 +22,23 @@ export class Game {
   async load() {
     let image = new Image();
     image.src = playerImage;
-    return image.decode().then(() => {createImageBitmap(image).then(imageBitmap => {
-      this.currentLevel = new Level(this, imageBitmap);
-    })});
-
-    this.pistol
+    
+    this.pistol = new Gun();
+    this.pistol.centerX = pistolJson.weapon.position.centerX;
+    this.pistol.shootX = pistolJson.weapon.position.shootX;
+    this.pistol.y = pistolJson.weapon.position.y;
+    let pistolImage = new Image();
+    pistolImage.src = `${pistolJson.weapon.image}`;
+    console.log(pistolImage.src);
+    
+    return Promise.all([
+      image.decode().then(() => {createImageBitmap(image).then(imageBitmap => {
+        this.currentLevel = new Level(this, imageBitmap);
+      })}), 
+      pistolImage.decode().then(() => {createImageBitmap(pistolImage).then(pistolBitmap => {
+        this.pistol.image = pistolBitmap;
+      })})
+    ]);
   }
 
   onKeyPressed(keyBoardEvent: KeyboardEvent) {

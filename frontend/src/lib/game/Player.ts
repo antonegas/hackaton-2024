@@ -55,6 +55,7 @@ export class Player {
         renderer.restore();
 
         if (this.gun) {
+            console.log("Gun!");
             renderer.save();
             const direction = Vector2D.subtract(this.aimTarget, position);
             const angle = direction.getAngle();

@@ -93,7 +93,6 @@ export class PhysicsEngine {
                     Vector2D.subtract(pointMass.nextPosition, edgeCollider.start).dot(edgeCollider.normal);
                     pointMass.nextPosition.addScaled(edgeCollider.normal, penetration);
                     if (this.collisionListener) {
-                        console.log("Hello");
                         this.collisionListener.onEdgeCollision(circleCollider, edgeCollider);
                     }
                 }

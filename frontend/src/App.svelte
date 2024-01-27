@@ -9,6 +9,8 @@
   import PartyJoin from "./lib/PartyJoin.svelte";
 
   let signedIn: boolean = localStorage.getItem("signedIn") === "true";
+  let username: string = localStorage.getItem("username");
+  let avatarUrl: string = localStorage.getItem("avatarUrl");
 
   onMount(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -52,8 +54,8 @@
   {#if !signedIn}
     <SignIn />
   {:else}
-    <UserInfo />
-    <PartyJoin />
+    <UserInfo username={username} avatarUrl={avatarUrl} />
+    <PartyJoin username={username} avatarUrl={avatarUrl} />
   {/if}
 </div>
 

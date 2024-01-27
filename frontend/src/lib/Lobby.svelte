@@ -7,6 +7,7 @@
   export let username;
   export let avatarUrl;
   export let signedIn;
+  export let partyId;
 </script>
 
 <SwagH1 text={"Ball Pit"} duration={2}/>
@@ -16,7 +17,7 @@
     <SignIn />
   {:else}
     <UserInfo username={username} avatarUrl={avatarUrl}/>
-    <PartyJoin username={username} avatarUrl={avatarUrl} />
+    <PartyJoin username={username} avatarUrl={avatarUrl} bind:partyId={partyId} />
   {/if}
 </div>
 

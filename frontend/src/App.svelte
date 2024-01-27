@@ -9,10 +9,12 @@
   import PartyJoin from "./lib/PartyJoin.svelte";
   import SwagH1 from "./lib/SwagH1.svelte";
     import Lobby from "./lib/Lobby.svelte";
+    import Party from "./lib/Party.svelte";
 
   let signedIn: boolean = localStorage.getItem("signedIn") === "true";
   let username: string = localStorage.getItem("username");
   let avatarUrl: string = localStorage.getItem("avatarUrl");
+  let partyId: number = null;
 
   onMount(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -50,4 +52,9 @@
   });
 </script>
 
-<Lobby username={username} avatarUrl={avatarUrl} signedIn={signedIn} />
+{#if !Number.isSafeInteger(partyId)}
+  <Lobby username={username} avatarUrl={avatarUrl} signedIn={signedIn} bind:partyId={partyId} />
+{:else}
+  <Party id={partyId} users={[{username: username, avatarUrl: avatarUrl},
+ {username: "test", avatarUrl: "https://api.dicebear.com/7.x/thumbs/svg?seed=test"}]} owner={true} />
+{/if}

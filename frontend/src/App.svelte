@@ -7,6 +7,8 @@
   import SignIn from "./lib/SignIn.svelte";
   import UserInfo from "./lib/UserInfo.svelte";
   import PartyJoin from "./lib/PartyJoin.svelte";
+  import SwagH1 from "./lib/SwagH1.svelte";
+  import Lobby from "./lib/Lobby.svelte";
 
   let signedIn: boolean = localStorage.getItem("signedIn") === "true";
   let username: string = localStorage.getItem("username");

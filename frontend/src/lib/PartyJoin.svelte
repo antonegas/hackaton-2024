@@ -4,18 +4,27 @@
   export let username: string;
   export let avatarUrl: string;
 
-  let id;
+  let id: number;
 
   function join(id) {
-
-  }
-
-  function create() {
     let options = {
       body: JSON.stringify({
         username: username,
         avatar_url: avatarUrl
       })
+    };
+  }
+
+  function create() {
+    let options = {
+        method: "POST",
+        body: JSON.stringify({
+          username: username,
+          avatar_url: avatarUrl
+        }),
+        headers: {
+        "Content-Type": "text/json",
+      },
     };
 
     fetch("/create", options)
@@ -25,12 +34,12 @@
 </script>
 
 <div class="wrapper">
-  {#if id}
+  {#if Number.isSafeInteger(id)}
     <ActionButton action={() => join(id)} description={"Join Party"} />
   {:else}
     <ActionButton action={create} description={"Create Party"} />
   {/if}
-  <input type="number" bind:value={id}/>
+  <input type="number" bind:value={id} placeholder="Party Code"/>
 </div>
 
 <style>

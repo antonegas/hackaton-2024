@@ -6,30 +6,31 @@ use std::{
     io,
 };
 
-
-
-use serde::{
-        Serialize, Deserialize,
-};
+use serde::{Deserialize, Serialize};
 
 
 static mut active_parties : Vec<Party> = Vec::new();
 
+
+
+#[derive(Serialize, Deserialize)]
 struct Player {
-        username : str,
-        avatar_url : str,
+        username : Box<str>,
+        avatar_url : Box<str>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct Party {
     id : u32,
     players : Vec<Player>,
-    streams : Vec<TcpStream>,
 }
 
-fn main() {
+
+
+fn main() -> Result<(), io::Error> {
     println!("trying to establish server connection");
 
-    match TcpListener::bind("127.0.0.1:5173"){
+    match TcpListener::bind("192.168.168.218:5173"){
         //bind() -> Result<Ok(TcpStream), io::Error>
         Ok(listener) => {
             println!("Established connection, {}", listener.local_addr().unwrap());
@@ -40,7 +41,6 @@ fn main() {
 
                 match  stream {
                         Ok(stream) => {
-                                
                             thread::spawn(|| {
                                 handle_connection(stream);
                             });
@@ -55,9 +55,13 @@ fn main() {
         },
         Err(..) => {
             println!("Establishing connection failed");
+            return Ok(());
         }
     }
+    return Ok(());
 }
+
+
 
 
 fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
@@ -79,13 +83,35 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
         match parts.as_slice() {
             ["GET", "/", ..] => {
                 return return_home(&stream);
+            }
+            ["GET", "/party", party_id, ..] => {
+                let status_line = "HTTP/1.1 200 OK\r\n";
+                
+
+                let party_id = party_id.parse::<u32>().unwrap();
+                unsafe {
+                        
+                    for party in &active_parties {
+                        if party.id == party_id {
+                                let contents = serde_json::to_string(&party).unwrap();
+                                let length = contents.len();
+                                let content_type = "text/json";
+
+                                let response =
+                                    format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+                                stream.write_all(response.as_bytes())?;
+                                
+                                
+                        }
+                    }
+                }
             },
             ["GET", "/join", party_id, ..] => {
                 println!("{} is the party id", party_id);
                 let response = "HTTP/1.1 200 OK\r\n\r\n";
                 stream.write_all(response.as_bytes())?;
             },
-            ["GET", "/create", ..] => {
+            ["POST", "/create", ..] => {
                 let status_line = "HTTP/1.1 200 OK";
                 let party_id = gen_party_id();
                 println!("{}", party_id);
@@ -93,22 +119,20 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
                 let length = contents.len();
                 let content_type = "text/text";
                  
-                let mut new_player = serde_json::Deserializer::from_reader(stream);
-                let host = User::deserialize(&mut de)?;
+                let mut new_player = serde_json::Deserializer::from_reader(&stream);
+                let host = Player::deserialize(&mut new_player)?;
 
                 let new_party = Party {
                         id : party_id,
-                        players : Vec![host], //TODO get initial player
-                        streams : Vec![stream], 
+                        players : vec![host],
                 };
 
-                //insert the party into my bunghole
-                unsafe { //entering my bunghole is very unsafe
+                unsafe {
                         active_parties.push(new_party);
                 }
-
                 let response = 
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");
+                stream.write_all(response.as_bytes())?;
             },
             ["GET", possible_asset_req, ..] => {
                 let status_line = "HTTP/1.1 200 OK";
@@ -124,7 +148,15 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
 
                 let contents = fs::read_to_string(asset_path).unwrap();
                 let length = contents.len();
-                let content_type = "text/javascript";
+
+                let mut content_type = "";
+
+                if possible_asset_req.contains(".js") {
+                    content_type = "text/javascript";
+                }
+                if possible_asset_req.contains(".css") {
+                    content_type = "text/css";
+                }
 
                 let response =
                     format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n{contents}");

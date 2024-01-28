@@ -3,7 +3,7 @@
 Backend in Rust
   - ⚡Blazingly fast
   - 🦀Compile time memory safety
-  - 💀Fearless concurrency
+  - 💀Fearless concurrency (unsafe)
   - 🐮grassfed, organic & vegan 🪴
   - 🦀currently boken
     

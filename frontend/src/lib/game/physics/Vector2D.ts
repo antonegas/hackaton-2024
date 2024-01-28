@@ -44,6 +44,11 @@ export class Vector2D {
         this.y = vector.y;
     }
 
+    multiply(scaler: number) {
+        this.x *= scaler;
+        this.y *= scaler;
+    }
+
     divide(scaler: number) {
         this.x /= scaler;
         this.y /= scaler;
@@ -62,6 +67,10 @@ export class Vector2D {
 
     getLength() {
         return Math.sqrt(this.x * this.x + this.y * this.y); 
+    }
+
+    getLengthSquared() {
+        return this.x * this.x + this.y * this.y;
     }
 
     getAngle() {

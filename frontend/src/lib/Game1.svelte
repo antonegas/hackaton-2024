@@ -19,6 +19,9 @@
     game.load().then(() => {
       window.addEventListener("keydown", (e) => game.onKeyPressed(e));
       window.addEventListener("keyup", (e) => game.onKeyReleased(e));
+      window.addEventListener("mousemove", (e) => game.onMouseMoved(e));
+      window.addEventListener("mousedown", (e) => game.onMousePressed(e));
+      window.addEventListener("mouseup", (e) => game.onMouseReleased(e));
       const interval = setInterval(() => {
         game.tick(deltaTimeSeconds);
         game.render();

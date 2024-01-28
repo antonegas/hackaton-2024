@@ -11,9 +11,10 @@ import PartyList from "./PartyList.svelte";
   export let users: User[];
   export let owner = false;
   export let id: number;
+  export let started: boolean;
 
   function start(id) {
-
+    started = true;
   }
 </script>
 

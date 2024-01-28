@@ -15,6 +15,7 @@
   let username: string = localStorage.getItem("username");
   let avatarUrl: string = localStorage.getItem("avatarUrl");
   let partyId: number = null;
+  let started: boolean = false;
 
   onMount(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -57,18 +58,31 @@
 
 {#if !Number.isSafeInteger(partyId)}
   <Lobby {username} {avatarUrl} {signedIn} bind:partyId />
+{:else if started}
+  <Game1 />
 {:else}
   <Party
     id={partyId}
     users={[
       { username: username, avatarUrl: avatarUrl },
       {
-        username: "test",
-        avatarUrl: "https://api.dicebear.com/7.x/thumbs/svg?seed=test",
+        username: "JSON",
+        avatarUrl: "https://api.dicebear.com/7.x/thumbs/svg?seed=JSON",
+      },
+      {
+        username: "ChatGPT",
+        avatarUrl: "https://api.dicebear.com/7.x/thumbs/svg?seed=ChatGPT",
+      },
+      {
+        username: "SvettLigan",
+        avatarUrl: "https://api.dicebear.com/7.x/thumbs/svg?seed=SvettLigan",
+      },
+      {
+        username: "RustBorrowChecker",
+        avatarUrl: "https://api.dicebear.com/7.x/thumbs/svg?seed=RustBorrowChecker",
       },
     ]}
     owner={true}
+    bind:started={started}
   />
 {/if}
-
-<!-- <Game1 /> -->

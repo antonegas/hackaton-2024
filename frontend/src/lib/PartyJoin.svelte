@@ -8,12 +8,6 @@
   let id: number;
 
   function join(id) {
-    let options = {
-      body: JSON.stringify({
-        username: username,
-        avatar: avatarUrl
-      })
-    };
     partyId = id;
   }
 
@@ -39,7 +33,7 @@
   {:else}
     <ActionButton action={create} description={"Create Party"} />
   {/if}
-  <input type="number" bind:value={id} on:input={() => {id = id.replace(/\D+/g, '')}} placeholder="Party Code"/>
+  <input type="number" bind:value={id} placeholder="Party Code"/>
 </div>
 
 <style>

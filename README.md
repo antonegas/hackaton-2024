@@ -15,10 +15,14 @@ Frontend in Svelte:
 
 Written by 
 
-🕹️Jonathan Larsson - Game engineer/frontend, 
+🕹️Jonathan Larsson - Game engineer/frontend,
+
 🔊Markus Svensson - Game assests engineer/frontend
+
 🦀Morgan Nordberg - Rust compiler error engineer/Backend
+
 🤖Leo Jarhede - Prompt engineer/Backend
+
 ⚡Anton Nilsson - Markup "engineer"/frontend
 
 

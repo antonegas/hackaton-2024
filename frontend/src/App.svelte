@@ -55,7 +55,7 @@
   });
 </script>
 
-<!--
+
 {#if !Number.isSafeInteger(partyId)}
   <Lobby {username} {avatarUrl} {signedIn} bind:partyId />
 {:else}
@@ -70,6 +70,6 @@
     ]}
     owner={true}
   />
-{/if}-->
+{/if}
 
-<Game1 />
+<!-- <Game1 /> -->

@@ -1,7 +1,8 @@
 # hackaton-2024
--⚡Blazingly fast
--🤯Game changer
--🧠Innovative
+
+- ⚡Blazingly fast
+- 🤯Game changer
+- 🧠Innovative
 
 Backend in Rust
   - ⚡Blazingly fast

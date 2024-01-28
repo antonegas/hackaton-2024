@@ -123,18 +123,8 @@ fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
 
 
                 let reader = BufReader::new(&stream);
-                println!("1");
                 let host: Player = serde_json::from_reader(reader)?;
-                println!("2");
-                //let mut new_player = serde_json::Deserializer::from_reader(&stream);
                 
-
-                //let host = Player::deserialize(&mut new_player).unwrap(); //?
-
-
-                //let host: Player = serde_json::from_str(new_player).unwrap();
-                
-
 
                 println!("player {} with url {}", host.username, host.avatar);
 
@@ -220,43 +210,6 @@ struct Game_state {
         bullets : Vec<Bullet>,
 }
 
-#[tokio::main]
-async fn turn_json_into_struct() -> Result<(), reqwest::Error> {
-        let some_request //: Some_struct
-            = reqwest::Client::new() // new request client
-            .get("http://127.0.0.1:7878/userId=1") // this issues a get to the placeholder
-            .send() // send the request
-            .await?
-            .text() //turn response body into a str. Replace with .json later
-            .await?;
-        //still dont know what's happening'
-
-        println!("{:#?}", some_request);
-        Ok(())
-}
-
-#[tokio::main]
-async fn create_and_return_json() -> Result<(), reqwest::Error> {
-    let some_struct = Player_state {
-        id : 1,
-        x : 1.0,
-        y : 1.0,
-        velocity : (0.1, 0.1),
-    };
-    let some_struct = reqwest::Client::new()
-        .post("http://placeholder")
-        .json(&some_struct) //serialize struct into JSON
-        .send()
-        .await?
-        .json() //second send is to take the ressponse and put it into a json and save it in some_struct? seems retarded af
-        .await?;
-
-    println!("{:#?}", some_struct);
-    
-    Ok(())
-}
-
-
 
 fn return_home(mut stream : &TcpStream) -> io::Result<()>{
     let status_line = "HTTP/1.1 200 OK";
@@ -271,6 +224,7 @@ fn return_home(mut stream : &TcpStream) -> io::Result<()>{
 }
 
 
+//This is exceptionally stupid even for me
 fn gen_party_id() -> u32 {
     let mut possible_id : u32 = 0;
     unsafe {

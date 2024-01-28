@@ -1,4 +1,7 @@
 # hackaton-2024
+-⚡Blazingly fast
+-🤯Game changer
+-🧠Innovative
 
 Backend in Rust
   - ⚡Blazingly fast
@@ -7,14 +10,17 @@ Backend in Rust
   - 🐮grassfed, organic & vegan 🪴
   - 🦀currently boken
     
-Frontend in Svelte:
+Frontend in Svelte
+  - ⚡Blazingly fast
   - 🎱Physics involving balls
   - 🤓🤓🤓Real time multiplayer game
-  - ⚡Blazingly fast
   - 🔫smash bros with guns
  
 
+
 Written by 
+
+(everyone was ⚡Blazingly fast)
 
 🕹️Jonathan Larsson - Game engineer/frontend,
 

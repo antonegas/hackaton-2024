@@ -21,10 +21,7 @@
 
     let options = {
         method: "POST",
-        body: JSON.stringify({
-          username: username,
-          avatar: avatarUrl
-        }),
+        body: `${username} ${avatarUrl}`,
         headers: {
           "Content-Type": "application/json",
         },
@@ -42,7 +39,7 @@
   {:else}
     <ActionButton action={create} description={"Create Party"} />
   {/if}
-  <input type="number" bind:value={id} placeholder="Party Code"/>
+  <input type="number" bind:value={id} on:input={() => {id = id.replace(/\D+/g, '')}} placeholder="Party Code"/>
 </div>
 
 <style>

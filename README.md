@@ -6,6 +6,7 @@ Backend in Rust
   - 💀Fearless concurrency
   - 🐮grassfed, organic & vegan 🪴
   - 🦀currently boken
+    
 Frontend in Svelte:
   - 🎱Physics involving balls
   - 🤓🤓🤓Real time multiplayer game

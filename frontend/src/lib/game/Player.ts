@@ -30,7 +30,6 @@ export class Player {
     }
 
     shoot() {
-        console.log("Shoot!");
         this.gun.shoot(this);
     }
 

@@ -1,0 +1,10 @@
+// vite.config.ts
+import { defineConfig } from "file:///C:/dev/hackathon/hackaton-2024/frontend/.yarn/__virtual__/vite-virtual-e3edb5f597/5/Users/jonat/AppData/Local/Yarn/Berry/cache/vite-npm-5.0.12-37f95c18d1-10c0.zip/node_modules/vite/dist/node/index.js";
+import { svelte } from "file:///C:/dev/hackathon/hackaton-2024/frontend/.yarn/__virtual__/@sveltejs-vite-plugin-svelte-virtual-69c7b1c69a/5/Users/jonat/AppData/Local/Yarn/Berry/cache/@sveltejs-vite-plugin-svelte-npm-3.0.1-6930f175f3-10c0.zip/node_modules/@sveltejs/vite-plugin-svelte/src/index.js";
+var vite_config_default = defineConfig({
+  plugins: [svelte()]
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJDOlxcXFxkZXZcXFxcaGFja2F0aG9uXFxcXGhhY2thdG9uLTIwMjRcXFxcZnJvbnRlbmRcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfZmlsZW5hbWUgPSBcIkM6XFxcXGRldlxcXFxoYWNrYXRob25cXFxcaGFja2F0b24tMjAyNFxcXFxmcm9udGVuZFxcXFx2aXRlLmNvbmZpZy50c1wiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9pbXBvcnRfbWV0YV91cmwgPSBcImZpbGU6Ly8vQzovZGV2L2hhY2thdGhvbi9oYWNrYXRvbi0yMDI0L2Zyb250ZW5kL3ZpdGUuY29uZmlnLnRzXCI7aW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAndml0ZSdcclxuaW1wb3J0IHsgc3ZlbHRlIH0gZnJvbSAnQHN2ZWx0ZWpzL3ZpdGUtcGx1Z2luLXN2ZWx0ZSdcclxuXHJcbi8vIGh0dHBzOi8vdml0ZWpzLmRldi9jb25maWcvXHJcbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7XHJcbiAgcGx1Z2luczogW3N2ZWx0ZSgpXSxcclxufSlcclxuIl0sCiAgIm1hcHBpbmdzIjogIjtBQUFpVCxTQUFTLG9CQUFvQjtBQUM5VSxTQUFTLGNBQWM7QUFHdkIsSUFBTyxzQkFBUSxhQUFhO0FBQUEsRUFDMUIsU0FBUyxDQUFDLE9BQU8sQ0FBQztBQUNwQixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

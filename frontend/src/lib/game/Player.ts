@@ -29,6 +29,11 @@ export class Player {
         this.circleCollider.pointMass.velocity.y += 10;
     }
 
+    shoot() {
+        console.log("Shoot!");
+        this.gun.shoot(this);
+    }
+
     render() {
         const renderer = this.level.game.renderer;
         const position = this.circleCollider.pointMass.position;
@@ -42,7 +47,7 @@ export class Player {
         renderer.rotate(angle);
 
         renderer.beginPath();
-        renderer.lineWidth = 0.1;
+        renderer.lineWidth = 0;
         renderer.strokeStyle = "white";
         renderer.arc(0.0, 0.0, radius, 0.0, 2.0 * Math.PI);
         renderer.stroke();
@@ -55,13 +60,21 @@ export class Player {
         renderer.restore();
 
         if (this.gun) {
-            console.log("Gun!");
             renderer.save();
+            renderer.beginPath();
             const direction = Vector2D.subtract(this.aimTarget, position);
+            if (direction.getLengthSquared() < 0.001) {
+                direction.x = 1.0;
+                direction.y = 0.0;
+            }
             const angle = direction.getAngle();
             renderer.rotate(angle);
-            const offset = new Vector2D(-this.gun.centerX, -this.gun.y);
-            renderImage(renderer, this.gun.image, offset, 1.0);
+            let offset = new Vector2D(0.5 * this.gun.image.width, 0.5 * this.gun.image.height);
+            offset.x -= this.gun.centerX;
+            offset.y -= this.gun.y;
+            offset.x *= this.gun.scale;
+            offset.y *= -this.gun.scale;
+            renderImage(renderer, this.gun.image, offset, this.gun.scale);
             renderer.restore();
         }
 

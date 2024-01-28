@@ -5,6 +5,7 @@ export function renderImage(
     position: Vector2D, scale: number
 ) {
     renderer.save();
+    renderer.beginPath();
 
     const scaledWidth = scale * image.width;
     const scaledHeight = scale * image.height;

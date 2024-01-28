@@ -29,7 +29,6 @@ export class Game {
     this.pistol.y = pistolJson.weapon.position.y;
     let pistolImage = new Image();
     pistolImage.src = `${pistolJson.weapon.image}`;
-    console.log(pistolImage.src);
     
     return Promise.all([
       image.decode().then(() => {createImageBitmap(image).then(imageBitmap => {

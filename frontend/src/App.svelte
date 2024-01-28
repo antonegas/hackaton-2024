@@ -34,7 +34,6 @@
     })
       .then((result) => result.json())
       .then((response) => {
-        console.log(response);
         const { id, username, avatar } = response;
         localStorage.setItem("signedIn", "true");
         localStorage.setItem("username", username);

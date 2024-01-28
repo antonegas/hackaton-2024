@@ -14,10 +14,7 @@
         avatar: avatarUrl
       })
     };
-    console.log(id);
     partyId = id;
-
-    console.log
   }
 
   function create() {
@@ -34,7 +31,7 @@
     };
 
     fetch("/create", options)
-    .then((result) => console.log(result))
+    .then((result) => {})
     .catch(console.error);
   }
 </script>

@@ -14,27 +14,24 @@
         avatar: avatarUrl
       })
     };
-    console.log(id);
     partyId = id;
-
-    console.log
   }
 
   function create() {
+
     let options = {
         method: "POST",
-        mode: "cors",
         body: JSON.stringify({
           username: username,
           avatar: avatarUrl
         }),
         headers: {
-        "Content-Type": "application/json",
-      },
+          "Content-Type": "application/json",
+        },
     };
 
     fetch("/create", options)
-    .then((result) => console.log(result))
+    .then((result) => {})
     .catch(console.error);
   }
 </script>

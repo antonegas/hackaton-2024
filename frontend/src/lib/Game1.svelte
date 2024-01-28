@@ -34,10 +34,6 @@
   const increment = () => {
     count += 1;
   };
-  function startGame() {
-    alert("Hello World!");
-    console.log("Hello!");
-  }
 </script>
 
 <div>

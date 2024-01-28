@@ -34,7 +34,6 @@
     })
       .then((result) => result.json())
       .then((response) => {
-        console.log(response);
         const { id, username, avatar } = response;
         localStorage.setItem("signedIn", "true");
         localStorage.setItem("username", username);
@@ -55,7 +54,7 @@
   });
 </script>
 
-<!--
+
 {#if !Number.isSafeInteger(partyId)}
   <Lobby {username} {avatarUrl} {signedIn} bind:partyId />
 {:else}
@@ -70,6 +69,6 @@
     ]}
     owner={true}
   />
-{/if}-->
+{/if}
 
-<Game1 />
+<!-- <Game1 /> -->
